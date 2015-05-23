@@ -7,6 +7,7 @@ TEMPLATE = app
 TARGET = phantomjs
 QT += network webkitwidgets
 CONFIG += console
+CONFIG += debug
 
 DESTDIR = ../bin
 
@@ -79,6 +80,7 @@ include(qcommandline/qcommandline.pri)
 
 linux*|mac|openbsd* {
     INCLUDEPATH += breakpad/src
+    QMAKE_CXXFLAGS += -g3
 
     SOURCES += breakpad/src/client/minidump_file_writer.cc \
       breakpad/src/common/convert_UTF.c \
