@@ -79,6 +79,15 @@ protected:
     qint64 readData(char *, qint64) { return -1; }
 };
 
+//class EnqueueableResponse : public QNetworkReply
+//{
+    //Q_OBJECT
+
+//public:
+    //EnqueueableResponse(QNetworkReply& reply);
+    //~EnqueueableResponse();
+//};
+
 class NetworkAccessManager : public QNetworkAccessManager
 {
     Q_OBJECT
@@ -107,6 +116,7 @@ protected:
 signals:
     void resourceRequested(const QVariant& data, QObject *);
     void resourceReceived(const QVariant& data);
+    void resourceReceiveFinished(const QVariant& data);
     void resourceError(const QVariant& data);
     void resourceTimeout(const QVariant& data);
 

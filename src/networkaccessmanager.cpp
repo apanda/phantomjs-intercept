@@ -43,6 +43,7 @@
 #include "config.h"
 #include "cookiejar.h"
 #include "networkaccessmanager.h"
+#include "proxynetworkreply.h"
 
 // 10 MB
 const qint64 MAX_REQUEST_POST_BODY_SIZE = 10 * 1000 * 1000;
@@ -95,7 +96,6 @@ NoFileAccessReply::NoFileAccessReply(QObject *parent, const QNetworkRequest &req
 
 // The destructor must be out-of-line in order to trigger generation of the vtable.
 NoFileAccessReply::~NoFileAccessReply() {}
-
 
 TimeoutTimer::TimeoutTimer(QObject* parent)
     : QTimer(parent)
@@ -318,15 +318,17 @@ QNetworkReply *NetworkAccessManager::createRequest(Operation op, const QNetworkR
     // Pass duty to the superclass - special case: file:/// may be disabled.
     // This conditional must match QNetworkAccessManager's own idea of what a
     // local file URL is.
-    QNetworkReply *reply;
+    QNetworkReply *replyt;
     if (!m_localUrlAccessEnabled && (isLocalFile || scheme == QLatin1String("qrc"))) {
-      reply = new NoFileAccessReply(this, req, op);
+      replyt = new NoFileAccessReply(this, req, op);
     } else {
-      reply = QNetworkAccessManager::createRequest(op, req, outgoingData);
+      replyt = QNetworkAccessManager::createRequest(op, req, outgoingData);
     }
 
     // reparent jsNetworkRequest to make sure that it will be destroyed with QNetworkReply
-    jsNetworkRequest.setParent(reply);
+    jsNetworkRequest.setParent(replyt);
+
+    QNetworkReply* reply = new ProxyNetworkReply(this, replyt);
 
     // If there is a timeout set, create a TimeoutTimer
     if(m_resourceTimeout > 0){
@@ -449,7 +451,7 @@ void NetworkAccessManager::handleFinished(QNetworkReply *reply, const QVariant &
     m_ids.remove(reply);
     m_started.remove(reply);
 
-    emit resourceReceived(data);
+    emit resourceReceiveFinished(data);
 }
 
 void NetworkAccessManager::handleSslErrors(const QList<QSslError> &errors)

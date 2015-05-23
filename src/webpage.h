@@ -492,6 +492,7 @@ signals:
     void javaScriptErrorSent(const QString &msg, int lineNumber, const QString &sourceID, const QString &stack);
     void resourceRequested(const QVariant &requestData, QObject *request);
     void resourceReceived(const QVariant &resource);
+    void resourceReceiveFinished(const QVariant &resource);
     void resourceError(const QVariant &errorData);
     void resourceTimeout(const QVariant &errorData);
     void urlChanged(const QUrl &url);

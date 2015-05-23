@@ -464,6 +464,10 @@ QNetworkAccessManager::QNetworkAccessManager(QObject *parent)
 #endif
 }
 
+void QNetworkAccessManager::setManager(QNetworkReply *reply) {
+    QNetworkReplyPrivate::setManager(reply, this); 
+}
+
 /*!
     Destroys the QNetworkAccessManager object and frees up any
     resources. Note that QNetworkReply objects that are returned from

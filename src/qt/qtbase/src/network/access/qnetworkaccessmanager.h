@@ -128,6 +128,8 @@ public:
     QNetworkReply *put(const QNetworkRequest &request, QHttpMultiPart *multiPart);
     QNetworkReply *deleteResource(const QNetworkRequest &request);
     QNetworkReply *sendCustomRequest(const QNetworkRequest &request, const QByteArray &verb, QIODevice *data = 0);
+    
+    void setManager(QNetworkReply *reply);
 
 #ifndef QT_NO_BEARERMANAGEMENT
     void setConfiguration(const QNetworkConfiguration &config);

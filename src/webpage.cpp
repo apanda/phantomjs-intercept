@@ -396,6 +396,8 @@ WebPage::WebPage(QObject *parent, const QUrl &baseUrl)
             SIGNAL(resourceRequested(QVariant, QObject *)));
     connect(m_networkAccessManager, SIGNAL(resourceReceived(QVariant)),
             SIGNAL(resourceReceived(QVariant)));
+    connect(m_networkAccessManager, SIGNAL(resourceReceiveFinished(QVariant)),
+            SIGNAL(resourceReceiveFinished(QVariant)));
     connect(m_networkAccessManager, SIGNAL(resourceError(QVariant)),
             SIGNAL(resourceError(QVariant)));
     connect(m_networkAccessManager, SIGNAL(resourceTimeout(QVariant)),
