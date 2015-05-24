@@ -7,6 +7,7 @@ load(qt_parts)
 SUBDIRS += qmake/qmake-docs.pro
 
 cross_compile: CONFIG += nostrip
+CONFIG += debug
 
 confclean.depends += clean
 confclean.commands =
