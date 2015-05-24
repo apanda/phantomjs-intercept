@@ -9,24 +9,24 @@ ProxyNetworkReply::ProxyNetworkReply(QNetworkAccessManager* access, QNetworkRepl
     
     // Hook up signals
     connect(m_proxied, SIGNAL(metaDataChanged()), this, SLOT (metaDataChanged()));
-    connect(m_proxied, SIGNAL(finished()), this, SLOT(finished()));
+    connect(m_proxied, SIGNAL(finished()), this, SLOT(finishedSlot()));
     connect(m_proxied, SIGNAL(error(QNetworkReply::NetworkError)), this,
-                     SLOT(error(QNetworkReply::NetworkError)));
+                     SLOT(errorSlot(QNetworkReply::NetworkError)));
     connect(m_proxied, SIGNAL(encrypted()), this, SLOT (encrypted()));
     connect(m_proxied, SIGNAL(sslErrors(const QList<QSslError>&)), this,
-                     SLOT(sslErrors(const QList<QSslError>&)));
+                     SLOT(sslErrorsSlot(const QList<QSslError>&)));
     connect(m_proxied, SIGNAL(uploadProgress(qint64, qint64)), this,
-                     SLOT(uploadProgress(qint64, qint64)));
+                     SLOT(uploadProgressSlot(qint64, qint64)));
     connect(m_proxied, SIGNAL(downloadProgress(qint64, qint64)), this,
-                     SLOT(downloadProgress(qint64, qint64)));
+                     SLOT(downloadProgressSlot(qint64, qint64)));
     connect(m_proxied, SIGNAL(aboutToClose()), this,
-                     SLOT(aboutToClose()));
+                     SLOT(aboutToCloseSlot()));
     connect(m_proxied, SIGNAL(bytesWritten(qint64)), this,
-                     SLOT(bytesWritten(qint64)));
+                     SLOT(bytesWrittenSlot(qint64)));
     connect(m_proxied, SIGNAL(readChannelFinished()), this,
-                     SLOT(readChannelFinished()));
+                     SLOT(readChannelFinishedSlot()));
     connect(m_proxied, SIGNAL(readyRead()), this,
-                     SLOT(readyRead()));
+                     SLOT(readyReadSlot()));
 }
 
 ProxyNetworkReply::~ProxyNetworkReply() {}
