@@ -328,7 +328,8 @@ QNetworkReply *NetworkAccessManager::createRequest(Operation op, const QNetworkR
     // reparent jsNetworkRequest to make sure that it will be destroyed with QNetworkReply
     jsNetworkRequest.setParent(replyt);
 
-    QNetworkReply* reply = new ProxyNetworkReply(this, replyt);
+    //QNetworkReply* reply = new ProxyNetworkReply(this, replyt);
+    QNetworkReply* reply = replyt;
 
     // If there is a timeout set, create a TimeoutTimer
     if(m_resourceTimeout > 0){
