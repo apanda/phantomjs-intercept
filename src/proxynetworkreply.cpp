@@ -6,26 +6,27 @@ ProxyNetworkReply::ProxyNetworkReply(QNetworkAccessManager* access, QNetworkRepl
   m_proxied(proxied) {
     Terminal::instance()->cout("New ProxyNetworkReply created");
     access->setManager(m_proxied);
-    connect(m_proxied, SIGNAL(metaDataChanged()), SIGNAL(metaDataChanged()));
-    connect(m_proxied, SIGNAL(finished()), SIGNAL(finished()));
-    connect(m_proxied, SIGNAL(error(QNetworkReply::NetworkError)),
-                     SIGNAL(error(QNetworkReply::NetworkError)));
-    connect(m_proxied, SIGNAL(encrypted()), SIGNAL(encrypted()));
-    connect(m_proxied, SIGNAL(sslErrors(const QList<QSslError>&)),
-                     SIGNAL(sslErrors(const QList<QSslError>&)));
-    connect(m_proxied, SIGNAL(uploadProgress(qint64, qint64)),
-                     SIGNAL(uploadProgress(qint64, qint64)));
-    connect(m_proxied, SIGNAL(downloadProgress(qint64, qint64)),
-                     SIGNAL(downloadProgress(qint64, qint64)));
-    connect(m_proxied, SIGNAL(aboutToClose()),
-                     SIGNAL(aboutToClose()));
-    connect(m_proxied, SIGNAL(bytesWritten(qint64)),
-                     SIGNAL(bytesWritten(qint64)));
-    connect(m_proxied, SIGNAL(readChannelFinished()),
-                     SIGNAL(readChannelFinished()));
-    connect(m_proxied, SIGNAL(readyRead()),
-                     SIGNAL(readyRead()));
+    
     // Hook up signals
+    connect(m_proxied, SIGNAL(metaDataChanged()), this, SLOT (metaDataChanged()));
+    connect(m_proxied, SIGNAL(finished()), this, SLOT(finished()));
+    connect(m_proxied, SIGNAL(error(QNetworkReply::NetworkError)), this,
+                     SLOT(error(QNetworkReply::NetworkError)));
+    connect(m_proxied, SIGNAL(encrypted()), this, SLOT (encrypted()));
+    connect(m_proxied, SIGNAL(sslErrors(const QList<QSslError>&)), this,
+                     SLOT(sslErrors(const QList<QSslError>&)));
+    connect(m_proxied, SIGNAL(uploadProgress(qint64, qint64)), this,
+                     SLOT(uploadProgress(qint64, qint64)));
+    connect(m_proxied, SIGNAL(downloadProgress(qint64, qint64)), this,
+                     SLOT(downloadProgress(qint64, qint64)));
+    connect(m_proxied, SIGNAL(aboutToClose()), this,
+                     SLOT(aboutToClose()));
+    connect(m_proxied, SIGNAL(bytesWritten(qint64)), this,
+                     SLOT(bytesWritten(qint64)));
+    connect(m_proxied, SIGNAL(readChannelFinished()), this,
+                     SLOT(readChannelFinished()));
+    connect(m_proxied, SIGNAL(readyRead()), this,
+                     SLOT(readyRead()));
 }
 
 ProxyNetworkReply::~ProxyNetworkReply() {}
@@ -62,4 +63,59 @@ qint64 ProxyNetworkReply::writeData(const char *data, qint64 len) {
 qint64 ProxyNetworkReply::readData(char *data, qint64 len) {
     Terminal::instance()->cout("Reading data");
     return m_proxied->read(data, len);
+}
+
+void ProxyNetworkReply::metaDataChanged() {
+    Terminal::instance()->cout("metaDataChanged");
+    emit metaDataChanged();
+}
+
+void ProxyNetworkReply::finished() {
+    Terminal::instance()->cout("finished");
+    emit finished();
+}
+
+void ProxyNetworkReply::error(QNetworkReply::NetworkError err) {
+    Terminal::instance()->cout(QString("error %1").arg(err));
+    emit error(err);
+}
+
+void ProxyNetworkReply::encrypted() {
+    Terminal::instance()->cout("encrypted");
+    emit encrypted();
+}
+
+void ProxyNetworkReply::sslErrors(const QList<QSslError> &errs) {
+    Terminal::instance()->cout("ssl errors");
+    emit sslErrors(errs);
+}
+
+void ProxyNetworkReply::uploadProgress(qint64 a, qint64 b) {
+    Terminal::instance()->cout("uploadProgress");
+    emit uploadProgress(a, b);
+}
+
+void ProxyNetworkReply::downloadProgress(qint64 a, qint64 b) {
+    Terminal::instance()->cout("downloadProgress");
+    emit downloadProgress(a, b);
+}
+
+void ProxyNetworkReply::aboutToClose() {
+    Terminal::instance()->cout("aboutToClose");
+    emit aboutToClose();
+}
+
+void ProxyNetworkReply::bytesWritten(qint64 bytes) {
+    Terminal::instance()->cout("bytesWritten");
+    emit bytesWritten(bytes);
+}
+
+void ProxyNetworkReply::readChannelFinished() {
+    Terminal::instance()->cout("readChannelFinished");
+    emit readChannelFinished();
+}
+
+void ProxyNetworkReply::readyRead() {
+    Terminal::instance()->cout("readyRead");
+    emit readyRead();
 }
