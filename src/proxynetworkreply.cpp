@@ -65,57 +65,57 @@ qint64 ProxyNetworkReply::readData(char *data, qint64 len) {
     return m_proxied->read(data, len);
 }
 
-void ProxyNetworkReply::metaDataChanged() {
+void ProxyNetworkReply::metaDataChangedSlot() {
     Terminal::instance()->cout("metaDataChanged");
     emit metaDataChanged();
 }
 
-void ProxyNetworkReply::finished() {
+void ProxyNetworkReply::finishedSlot() {
     Terminal::instance()->cout("finished");
     emit finished();
 }
 
-void ProxyNetworkReply::error(QNetworkReply::NetworkError err) {
+void ProxyNetworkReply::errorSlot(QNetworkReply::NetworkError err) {
     Terminal::instance()->cout(QString("error %1").arg(err));
     emit error(err);
 }
 
-void ProxyNetworkReply::encrypted() {
+void ProxyNetworkReply::encryptedSlot() {
     Terminal::instance()->cout("encrypted");
     emit encrypted();
 }
 
-void ProxyNetworkReply::sslErrors(const QList<QSslError> &errs) {
+void ProxyNetworkReply::sslErrorsSlot(const QList<QSslError> &errs) {
     Terminal::instance()->cout("ssl errors");
     emit sslErrors(errs);
 }
 
-void ProxyNetworkReply::uploadProgress(qint64 a, qint64 b) {
+void ProxyNetworkReply::uploadProgressSlot(qint64 a, qint64 b) {
     Terminal::instance()->cout("uploadProgress");
     emit uploadProgress(a, b);
 }
 
-void ProxyNetworkReply::downloadProgress(qint64 a, qint64 b) {
+void ProxyNetworkReply::downloadProgressSlot(qint64 a, qint64 b) {
     Terminal::instance()->cout("downloadProgress");
     emit downloadProgress(a, b);
 }
 
-void ProxyNetworkReply::aboutToClose() {
+void ProxyNetworkReply::aboutToCloseSlot() {
     Terminal::instance()->cout("aboutToClose");
     emit aboutToClose();
 }
 
-void ProxyNetworkReply::bytesWritten(qint64 bytes) {
+void ProxyNetworkReply::bytesWrittenSlot(qint64 bytes) {
     Terminal::instance()->cout("bytesWritten");
     emit bytesWritten(bytes);
 }
 
-void ProxyNetworkReply::readChannelFinished() {
+void ProxyNetworkReply::readChannelFinishedSlot() {
     Terminal::instance()->cout("readChannelFinished");
     emit readChannelFinished();
 }
 
-void ProxyNetworkReply::readyRead() {
+void ProxyNetworkReply::readyReadSlot() {
     Terminal::instance()->cout("readyRead");
     emit readyRead();
 }

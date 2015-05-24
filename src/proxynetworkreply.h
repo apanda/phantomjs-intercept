@@ -18,17 +18,17 @@ public:
 public Q_SLOTS:
     virtual void abort();
     virtual void ignoreSslErrors();
-    void metaDataChanged();
-    void finished();
-    void error(NetworkError);
-    void encrypted();
-    void sslErrors(const QList<QSslError>&);
-    void uploadProgress(qint64, qint64);
-    void downloadProgress(qint64, qint64);
-    void aboutToClose();
-    void bytesWritten(qint64);
-    void readChannelFinished();
-    void readyRead();
+    void metaDataChangedSlot();
+    void finishedSlot();
+    void errorSlot(NetworkError);
+    void encryptedSlot();
+    void sslErrorsSlot(const QList<QSslError>&);
+    void uploadProgressSlot(qint64, qint64);
+    void downloadProgressSlot(qint64, qint64);
+    void aboutToCloseSlot();
+    void bytesWrittenSlot(qint64);
+    void readChannelFinishedSlot();
+    void readyReadSlot();
 protected:
     QNetworkReply* m_proxied;
     virtual qint64 writeData(const char *data, qint64 len);
