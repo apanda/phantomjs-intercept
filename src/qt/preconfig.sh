@@ -102,6 +102,7 @@ QT_CFG+=' -release'             # Build only for release (no debugging support)
 QT_CFG+=' -nomake tools'        # Don't build the tools
 QT_CFG+=' -nomake examples'     # Don't build any examples
 QT_CFG+=' -no-compile-examples' # Seriously, don't build any examples
+QT_CFG+=' -force-debug-info'
 
 if [[ $OSTYPE == darwin* ]]; then
     QT_CFG+=' -no-c++11'        # Build fails on mac right now with C++11
