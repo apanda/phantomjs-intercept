@@ -177,8 +177,8 @@ if [[ "$QTWEBKIT" == "bundled" ]]; then
     # By default, suppress video and audio-related features.
     # They can be reactivated with e.g.
     # --qmake-args WEBKIT_CONFIG+='use_gstreamer video'
-    WEBKIT_DISABLE=
-    WEBKIT_DISABLE+=' use_glib'
+    #WEBKIT_DISABLE=
+    WEBKIT_DISABLE+='use_glib'
     WEBKIT_DISABLE+=' use_gstreamer'
     WEBKIT_DISABLE+=' use_gstreamer010'
     WEBKIT_DISABLE+=' use_native_fullscreen_video'
@@ -188,8 +188,7 @@ if [[ "$QTWEBKIT" == "bundled" ]]; then
     WEBKIT_DISABLE+=' gamepad'
 
     ( cd src/qt/qtwebkit &&
-        $QMAKE "WEBKIT_CONFIG -= $WEBKIT_DISABLE" "CONFIG-=release" "CONFIG+=debug" "CONFIG-=production_build"  $QMAKE_ARGS &&
-        make -j$COMPILE_JOBS $MAKE_S )
+        $QMAKE "WEBKIT_CONFIG -= $WEBKIT_DISABLE" CONFIG-=release CONFIG+=debug $QMAKE_ARGS && make -j$COMPILE_JOBS $MAKE_S )
 fi
 
 echo

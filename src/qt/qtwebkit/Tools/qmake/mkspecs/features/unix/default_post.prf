@@ -35,12 +35,12 @@ linux-g++*:isEqual(QT_ARCH,i386) {
     }
 }
 
-linux-*g++* {
-    !production_build {
-        # Treat warnings as errors on x86/Linux/GCC
-        isEqual(QT_ARCH,x86_64)|isEqual(QT_ARCH,i386): QMAKE_CXXFLAGS += -Werror
-    }
-}
+#linux-*g++* {
+    #!production_build {
+        ## Treat warnings as errors on x86/Linux/GCC
+        #isEqual(QT_ARCH,x86_64)|isEqual(QT_ARCH,i386): QMAKE_CXXFLAGS += -Werror
+    #}
+#}
 
 !c++11:!intel_icc {
     # Don't warn about OVERRIDE and FINAL, since they are feature-checked anyways
