@@ -5,4 +5,7 @@ page.onResourceRequested = function(request) {
 page.onResourceReceived = function(response) {
       console.log('Receive ' + JSON.stringify(response, undefined, 4));
 };
+page.onResourceReceiveFinished = function(response) {
+      console.log('Receive finished' + JSON.stringify(response, undefined, 4));
+};
 page.open('https://news.ycombinator.com/');
