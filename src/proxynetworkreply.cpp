@@ -121,7 +121,7 @@ void ProxyNetworkReply::readyReadSlot() {
 }
 
 bool ProxyNetworkReply::open(OpenMode mode) {
-    m_proxied->open(mode);
+    return m_proxied->open(mode);
 }
 
 qint64 ProxyNetworkReply::pos() const {
