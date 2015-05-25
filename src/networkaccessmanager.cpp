@@ -43,7 +43,7 @@
 #include "config.h"
 #include "cookiejar.h"
 #include "networkaccessmanager.h"
-#include "proxynetworkreply.h"
+#include "terminal.h"
 
 // 10 MB
 const qint64 MAX_REQUEST_POST_BODY_SIZE = 10 * 1000 * 1000;
