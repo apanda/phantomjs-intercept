@@ -348,6 +348,7 @@ QNetworkReply *NetworkAccessManager::createRequest(Operation op, const QNetworkR
     connect(reply, SIGNAL(readyRead()), this, SLOT(handleStarted()));
     connect(reply, SIGNAL(sslErrors(const QList<QSslError> &)), this, SLOT(handleSslErrors(const QList<QSslError> &)));
     connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(handleNetworkError()));
+    connect(reply, SIGNAL(finishedDataAvailable()), this, SLOT(handleFinishedDataAvailable()));
 
     return reply;
 }
@@ -484,6 +485,6 @@ void NetworkAccessManager::handleNetworkError()
     emit resourceError(data);
 }
 
-void NetworkAccessManager:: handleFinshedDataAvailable() {
+void NetworkAccessManager:: handleFinishedDataAvailable() {
     Terminal::instance()->cout("Got handleFinishedDataAvailable call");
 }
