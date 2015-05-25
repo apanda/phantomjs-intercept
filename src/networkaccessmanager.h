@@ -127,6 +127,7 @@ private slots:
     void handleSslErrors(const QList<QSslError> &errors);
     void handleNetworkError();
     void handleTimeout();
+    void handleFinshedDataAvailable();
 
 private:
     QHash<QNetworkReply*, int> m_ids;

@@ -1873,6 +1873,7 @@ void QNetworkReplyHttpImplPrivate::_q_finished()
 void QNetworkReplyHttpImplPrivate::finished()
 {
     Q_Q(QNetworkReplyHttpImpl);
+    emit q->finishedDataAvailable();
 
     if (state == Finished || state == Aborted || state == WaitingForSession)
         return;

@@ -163,6 +163,8 @@ Q_SIGNALS:
     void uploadProgress(qint64 bytesSent, qint64 bytesTotal);
     void downloadProgress(qint64 bytesReceived, qint64 bytesTotal);
 
+    void finishedDataAvailable();
+
 protected:
     explicit QNetworkReply(QObject *parent = 0);
     QNetworkReply(QNetworkReplyPrivate &dd, QObject *parent);

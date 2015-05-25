@@ -328,7 +328,7 @@ QNetworkReply *NetworkAccessManager::createRequest(Operation op, const QNetworkR
     // reparent jsNetworkRequest to make sure that it will be destroyed with QNetworkReply
     jsNetworkRequest.setParent(replyt);
 
-    QNetworkReply* reply = new ProxyNetworkReply(this, replyt);
+    QNetworkReply* reply = replyt; // new ProxyNetworkReply(this, replyt);
 
     // If there is a timeout set, create a TimeoutTimer
     if(m_resourceTimeout > 0){
@@ -482,4 +482,9 @@ void NetworkAccessManager::handleNetworkError()
     data["statusText"] = reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute);
 
     emit resourceError(data);
+}
+
+void NetworkAccessManager:: handleFinshedDataAvailable() {
+    QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
+    Terminal::instance()->cout("Got handleFinishedDataAvailable call");
 }

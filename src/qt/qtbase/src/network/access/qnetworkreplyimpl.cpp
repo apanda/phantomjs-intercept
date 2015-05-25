@@ -775,6 +775,7 @@ void QNetworkReplyImplPrivate::appendDownstreamDataDownloadBuffer(qint64 bytesRe
 void QNetworkReplyImplPrivate::finished()
 {
     Q_Q(QNetworkReplyImpl);
+    emit q->finishedDataAvailable();
 
     if (state == Finished || state == Aborted || state == WaitingForSession)
         return;
