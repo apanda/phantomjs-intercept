@@ -119,3 +119,48 @@ void ProxyNetworkReply::readyReadSlot() {
     Terminal::instance()->cout("readyRead");
     emit readyRead();
 }
+
+bool ProxyNetworkReply::open(OpenMode mode) {
+    m_proxied->open(mode);
+}
+
+qint64 ProxyNetworkReply::pos() const {
+    return m_proxied->pos();
+}
+
+qint64 ProxyNetworkReply::size() const {
+    return m_proxied->size();
+}
+
+bool ProxyNetworkReply::seek(qint64 pos) {
+    return m_proxied->seek(pos);
+}
+
+bool ProxyNetworkReply::atEnd() const {
+    return m_proxied->atEnd();
+}
+
+bool ProxyNetworkReply::reset() {
+    return m_proxied->reset();
+}
+
+qint64 ProxyNetworkReply::bytesAvailable() const {
+    return m_proxied->bytesAvailable();
+}
+
+qint64 ProxyNetworkReply::bytesToWrite() const {
+    return m_proxied->bytesToWrite();
+}
+
+bool ProxyNetworkReply::canReadLine() const {
+    return m_proxied->canReadLine();
+}
+
+bool ProxyNetworkReply::waitForReadyRead(int msecs) {
+    return m_proxied->waitForReadyRead(msecs);
+}
+
+bool ProxyNetworkReply::waitForBytesWritten(int msecs) {
+    return m_proxied->waitForBytesWritten(msecs);
+}
+
