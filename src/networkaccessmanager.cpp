@@ -485,6 +485,5 @@ void NetworkAccessManager::handleNetworkError()
 }
 
 void NetworkAccessManager:: handleFinshedDataAvailable() {
-    QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
     Terminal::instance()->cout("Got handleFinishedDataAvailable call");
 }
