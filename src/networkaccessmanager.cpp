@@ -317,7 +317,6 @@ QNetworkReply *NetworkAccessManager::createRequest(Operation op, const QNetworkR
     data["time"] = QDateTime::currentDateTime();
 
     JsNetworkRequest jsNetworkRequest(&req, this);
-    Terminal::instance()->cout("Emitting resource requested");
     emit resourceRequested(data, &jsNetworkRequest);
 
     // Pass duty to the superclass - special case: file:/// may be disabled.
@@ -505,7 +504,6 @@ void JsNetworkReply::deliverData()
 
 void NetworkAccessManager:: handleFinishedDataAvailable() 
 {
-    Terminal::instance()->cout("Got handleFinishedDataAvailable call");
     QNetworkReply* reply = qobject_cast<QNetworkReply*>(sender());
     JsNetworkReply* jsReply = new JsNetworkReply(reply, reply);
     QVariantList headers;
