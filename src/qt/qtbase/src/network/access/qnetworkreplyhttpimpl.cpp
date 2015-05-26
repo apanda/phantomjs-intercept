@@ -899,8 +899,8 @@ void QNetworkReplyHttpImplPrivate::postRequest()
     // This call automatically moves the uploadDevice too for the asynchronous case.
 
     // Prepare timers for progress notifications
-    downloadProgressSignalChoke.start();
-    uploadProgressSignalChoke.invalidate();
+    //downloadProgressSignalChoke.start();
+    //uploadProgressSignalChoke.invalidate();
 
     // Send an signal to the delegate so it starts working in the other thread
     if (synchronous) {
@@ -1041,11 +1041,11 @@ void QNetworkReplyHttpImplPrivate::replyDownloadData(QByteArray d)
     emit q->readyRead();
     // emit readyRead before downloadProgress incase this will cause events to be
     // processed and we get into a recursive call (as in QProgressDialog).
-    if (downloadProgressSignalChoke.elapsed() >= progressSignalInterval) {
-        downloadProgressSignalChoke.restart();
-        emit q->downloadProgress(bytesDownloaded,
-                             totalSize.isNull() ? Q_INT64_C(-1) : totalSize.toLongLong());
-    }
+    //if (downloadProgressSignalChoke.elapsed() >= progressSignalInterval) {
+        //downloadProgressSignalChoke.restart();
+        //emit q->downloadProgress(bytesDownloaded,
+                             //totalSize.isNull() ? Q_INT64_C(-1) : totalSize.toLongLong());
+    //}
 
 }
 
@@ -1204,10 +1204,10 @@ void QNetworkReplyHttpImplPrivate::replyDownloadProgressSlot(qint64 bytesReceive
     // processed and we get into a recursive call (as in QProgressDialog).
     if (bytesDownloaded > 0)
         emit q->readyRead();
-    if (downloadProgressSignalChoke.elapsed() >= progressSignalInterval) {
-        downloadProgressSignalChoke.restart();
-        emit q->downloadProgress(bytesDownloaded, bytesTotal);
-    }
+    //if (downloadProgressSignalChoke.elapsed() >= progressSignalInterval) {
+        //downloadProgressSignalChoke.restart();
+        //emit q->downloadProgress(bytesDownloaded, bytesTotal);
+    //}
 }
 
 void QNetworkReplyHttpImplPrivate::httpAuthenticationRequired(const QHttpNetworkRequest &request,
@@ -1655,11 +1655,11 @@ void QNetworkReplyHttpImplPrivate::_q_cacheLoadReadyRead()
 
     // This readyRead() goes to the user. The user then may or may not read() anything.
     emit q->readyRead();
-    if (downloadProgressSignalChoke.elapsed() >= progressSignalInterval) {
-        downloadProgressSignalChoke.restart();
-        emit q->downloadProgress(bytesDownloaded,
-                             totalSize.isNull() ? Q_INT64_C(-1) : totalSize.toLongLong());
-    }
+    //if (downloadProgressSignalChoke.elapsed() >= progressSignalInterval) {
+        //downloadProgressSignalChoke.restart();
+        //emit q->downloadProgress(bytesDownloaded,
+                             //totalSize.isNull() ? Q_INT64_C(-1) : totalSize.toLongLong());
+    //}
 
     // If there are still bytes available in the cacheLoadDevice then the user did not read
     // in response to the readyRead() signal. This means we have to load from the cacheLoadDevice
@@ -1908,11 +1908,11 @@ void QNetworkReplyHttpImplPrivate::finished()
     state = Finished;
     q->setFinished(true);
 
-    if (totalSize.isNull() || totalSize == -1) {
-        emit q->downloadProgress(bytesDownloaded, bytesDownloaded);
-    } else {
-        emit q->downloadProgress(bytesDownloaded, totalSize.toLongLong());
-    }
+    //if (totalSize.isNull() || totalSize == -1) {
+        //emit q->downloadProgress(bytesDownloaded, bytesDownloaded);
+    //} else {
+        //emit q->downloadProgress(bytesDownloaded, totalSize.toLongLong());
+    //}
 
     if (bytesUploaded == -1 && (outgoingData || outgoingDataBuffer))
         emit q->uploadProgress(0, 0);
