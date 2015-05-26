@@ -316,8 +316,8 @@ QNetworkReply *NetworkAccessManager::createRequest(Operation op, const QNetworkR
     if (op == QNetworkAccessManager::PostOperation) data["postData"] = postData.data();
     data["time"] = QDateTime::currentDateTime();
 
-    JsNetworkRequest jsNetworkRequest(&req, this);
-    emit resourceRequested(data, &jsNetworkRequest);
+    JsNetworkRequest *jsNetworkRequest = new JsNetworkRequest(&req, this);
+    emit resourceRequested(data, jsNetworkRequest);
 
     // Pass duty to the superclass - special case: file:/// may be disabled.
     // This conditional must match QNetworkAccessManager's own idea of what a
@@ -330,7 +330,7 @@ QNetworkReply *NetworkAccessManager::createRequest(Operation op, const QNetworkR
     }
 
     // reparent jsNetworkRequest to make sure that it will be destroyed with QNetworkReply
-    jsNetworkRequest.setParent(replyt);
+    jsNetworkRequest->setParent(replyt);
 
     QNetworkReply* reply = replyt; // new ProxyNetworkReply(this, replyt);
 
@@ -489,6 +489,43 @@ void NetworkAccessManager::handleNetworkError()
     emit resourceError(data);
 }
 
-void NetworkAccessManager:: handleFinishedDataAvailable() {
+JsNetworkReply::JsNetworkReply(QNetworkReply* reply, QObject* parent):
+    QObject(parent),
+    m_networkReply(reply)
+{
+}
+
+void JsNetworkReply::deliverData() 
+{
+    if (m_networkReply) {
+        m_networkReply->deliverFinish();
+    }
+}
+
+void NetworkAccessManager:: handleFinishedDataAvailable() 
+{
     Terminal::instance()->cout("Got handleFinishedDataAvailable call");
+    QNetworkReply* reply = qobject_cast<QNetworkReply*>(sender());
+    JsNetworkReply* jsReply = new JsNetworkReply(reply, reply);
+    QVariantList headers;
+    foreach (QByteArray headerName, reply->rawHeaderList()) {
+        QVariantMap header;
+        header["name"] = QString::fromUtf8(headerName);
+        header["value"] = QString::fromUtf8(reply->rawHeader(headerName));
+        headers += header;
+    }
+
+    QVariantMap data;
+    data["stage"] = "end";
+    data["id"] = m_ids.value(reply);
+    data["url"] = reply->url().toEncoded().data();
+    data["status"] = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute);
+    data["statusText"] = reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute);
+    data["contentType"] = reply->header(QNetworkRequest::ContentTypeHeader);
+    data["redirectURL"] = reply->header(QNetworkRequest::LocationHeader);
+    data["headers"] = headers;
+    data["time"] = QDateTime::currentDateTime();
+
+    emit resourceDataAvailable(data, jsReply);
+
 }

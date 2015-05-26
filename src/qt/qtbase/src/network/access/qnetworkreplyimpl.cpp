@@ -143,8 +143,8 @@ void QNetworkReplyImplPrivate::_q_startOperation()
 #endif
 
     // Prepare timer for progress notifications
-    downloadProgressSignalChoke.start();
-    uploadProgressSignalChoke.invalidate();
+    //downloadProgressSignalChoke.start();
+    //uploadProgressSignalChoke.invalidate();
 
     if (backend && backend->isSynchronous()) {
         state = Finished;
@@ -212,11 +212,11 @@ void QNetworkReplyImplPrivate::_q_copyReadyRead()
     // emit readyRead before downloadProgress incase this will cause events to be
     // processed and we get into a recursive call (as in QProgressDialog).
     emit q->readyRead();
-    if (downloadProgressSignalChoke.elapsed() >= progressSignalInterval) {
-        downloadProgressSignalChoke.restart();
-        emit q->downloadProgress(bytesDownloaded,
-                             totalSize.isNull() ? Q_INT64_C(-1) : totalSize.toLongLong());
-    }
+    //if (downloadProgressSignalChoke.elapsed() >= progressSignalInterval) {
+        //downloadProgressSignalChoke.restart();
+        //emit q->downloadProgress(bytesDownloaded,
+                             //totalSize.isNull() ? Q_INT64_C(-1) : totalSize.toLongLong());
+    //}
     resumeNotificationHandling();
 }
 
@@ -654,13 +654,13 @@ void QNetworkReplyImplPrivate::appendDownstreamDataSignalEmissions()
     // important: At the point of this readyRead(), the data parameter list must be empty,
     // else implicit sharing will trigger memcpy when the user is reading data!
     emit q->readyRead();
-    // emit readyRead before downloadProgress incase this will cause events to be
-    // processed and we get into a recursive call (as in QProgressDialog).
-    if (downloadProgressSignalChoke.elapsed() >= progressSignalInterval) {
-        downloadProgressSignalChoke.restart();
-        emit q->downloadProgress(bytesDownloaded,
-                             totalSize.isNull() ? Q_INT64_C(-1) : totalSize.toLongLong());
-    }
+    //// emit readyRead before downloadProgress incase this will cause events to be
+    //// processed and we get into a recursive call (as in QProgressDialog).
+    //if (downloadProgressSignalChoke.elapsed() >= progressSignalInterval) {
+        //downloadProgressSignalChoke.restart();
+        //emit q->downloadProgress(bytesDownloaded,
+                             //totalSize.isNull() ? Q_INT64_C(-1) : totalSize.toLongLong());
+    //}
 
     resumeNotificationHandling();
     // do we still have room in the buffer?
@@ -766,16 +766,15 @@ void QNetworkReplyImplPrivate::appendDownstreamDataDownloadBuffer(qint64 bytesRe
     // processed and we get into a recursive call (as in QProgressDialog).
     if (bytesDownloaded > 0)
         emit q->readyRead();
-    if (downloadProgressSignalChoke.elapsed() >= progressSignalInterval) {
-        downloadProgressSignalChoke.restart();
-        emit q->downloadProgress(bytesDownloaded, bytesTotal);
-    }
+    //if (downloadProgressSignalChoke.elapsed() >= progressSignalInterval) {
+        //downloadProgressSignalChoke.restart();
+        //emit q->downloadProgress(bytesDownloaded, bytesTotal);
+    //}
 }
 
 void QNetworkReplyImplPrivate::finished()
 {
     Q_Q(QNetworkReplyImpl);
-    emit q->finishedDataAvailable();
 
     if (state == Finished || state == Aborted || state == WaitingForSession)
         return;
@@ -816,11 +815,11 @@ void QNetworkReplyImplPrivate::finished()
     pendingNotifications.clear();
 
     pauseNotificationHandling();
-    if (totalSize.isNull() || totalSize == -1) {
-        emit q->downloadProgress(bytesDownloaded, bytesDownloaded);
-    } else {
-        emit q->downloadProgress(bytesDownloaded, totalSize.toLongLong());
-    }
+    //if (totalSize.isNull() || totalSize == -1) {
+        //emit q->downloadProgress(bytesDownloaded, bytesDownloaded);
+    //} else {
+        //emit q->downloadProgress(bytesDownloaded, totalSize.toLongLong());
+    //}
 
     if (bytesUploaded == -1 && (outgoingData || outgoingDataBuffer))
         emit q->uploadProgress(0, 0);
@@ -834,8 +833,9 @@ void QNetworkReplyImplPrivate::finished()
     // which would delete the backend too...
     // maybe we should protect the backend
     pauseNotificationHandling();
-    emit q->readChannelFinished();
-    emit q->finished();
+    emit q->finishedDataAvailable();
+    //emit q->readChannelFinished();
+    //emit q->finished();
     resumeNotificationHandling();
 }
 
@@ -1158,6 +1158,8 @@ QDisabledNetworkReply::~QDisabledNetworkReply()
 #endif
 
 void QNetworkReplyImpl::deliverFinish() {
+    emit readChannelFinished();
+    emit finished();
 }
 
 void QDisabledNetworkReply::deliverFinish() {

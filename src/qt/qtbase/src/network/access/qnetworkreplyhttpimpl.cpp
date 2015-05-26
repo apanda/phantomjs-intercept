@@ -1873,7 +1873,6 @@ void QNetworkReplyHttpImplPrivate::_q_finished()
 void QNetworkReplyHttpImplPrivate::finished()
 {
     Q_Q(QNetworkReplyHttpImpl);
-    emit q->finishedDataAvailable();
 
     if (state == Finished || state == Aborted || state == WaitingForSession)
         return;
@@ -1908,21 +1907,11 @@ void QNetworkReplyHttpImplPrivate::finished()
     state = Finished;
     q->setFinished(true);
 
-    //if (totalSize.isNull() || totalSize == -1) {
-        //emit q->downloadProgress(bytesDownloaded, bytesDownloaded);
-    //} else {
-        //emit q->downloadProgress(bytesDownloaded, totalSize.toLongLong());
-    //}
-
-    if (bytesUploaded == -1 && (outgoingData || outgoingDataBuffer))
-        emit q->uploadProgress(0, 0);
-
     // if we don't know the total size of or we received everything save the cache
     if (totalSize.isNull() || totalSize == -1 || bytesDownloaded == totalSize)
         completeCacheSave();
 
-    emit q->readChannelFinished();
-    emit q->finished();
+    emit q->finishedDataAvailable();
 }
 
 void QNetworkReplyHttpImplPrivate::_q_error(QNetworkReplyImpl::NetworkError code, const QString &errorMessage)
@@ -2067,6 +2056,8 @@ void QNetworkReplyHttpImplPrivate::completeCacheSave()
 }
 
 void QNetworkReplyHttpImpl::deliverFinish() {
+    emit readChannelFinished();
+    emit finished();
 }
 
 QT_END_NAMESPACE
