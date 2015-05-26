@@ -78,6 +78,8 @@ public:
 
     virtual qint64 readData(char *data, qint64 maxlen);
 
+    virtual void deliverFinish();
+
     Q_DECLARE_PRIVATE(QNetworkReplyDataImpl)
 };
 

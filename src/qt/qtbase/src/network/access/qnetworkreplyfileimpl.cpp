@@ -194,6 +194,8 @@ qint64 QNetworkReplyFileImpl::readData(char *data, qint64 maxlen)
         return ret;
 }
 
+void QNetworkReplyFileImpl::deliverFinish()  {
+}
 
 QT_END_NAMESPACE
 

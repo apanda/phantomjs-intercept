@@ -1157,6 +1157,12 @@ QDisabledNetworkReply::~QDisabledNetworkReply()
 }
 #endif
 
+void QNetworkReplyImpl::deliverFinish() {
+}
+
+void QDisabledNetworkReply::deliverFinish() {
+}
+
 QT_END_NAMESPACE
 
 #include "moc_qnetworkreplyimpl_p.cpp"

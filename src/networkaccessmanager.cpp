@@ -88,14 +88,18 @@ NoFileAccessReply::NoFileAccessReply(QObject *parent, const QNetworkRequest &req
     QString msg = (QCoreApplication::translate("QNetworkReply", "Protocol \"%1\" is unknown")
                    .arg(req.url().scheme()));
     setError(ProtocolUnknownError, msg);
+    deliverFinish();
+}
+
+// The destructor must be out-of-line in order to trigger generation of the vtable.
+NoFileAccessReply::~NoFileAccessReply() {}
+
+void NoFileAccessReply::deliverFinish() {
 
     QMetaObject::invokeMethod(this, "error", Qt::QueuedConnection,
                               Q_ARG(QNetworkReply::NetworkError, ProtocolUnknownError));
     QMetaObject::invokeMethod(this, "finished", Qt::QueuedConnection);
 }
-
-// The destructor must be out-of-line in order to trigger generation of the vtable.
-NoFileAccessReply::~NoFileAccessReply() {}
 
 TimeoutTimer::TimeoutTimer(QObject* parent)
     : QTimer(parent)

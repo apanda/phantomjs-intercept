@@ -95,6 +95,8 @@ public:
     void setReadBufferSize(qint64 size);
     bool canReadLine () const;
 
+    virtual void deliverFinish();
+
     Q_DECLARE_PRIVATE(QNetworkReplyHttpImpl)
     Q_PRIVATE_SLOT(d_func(), void _q_startOperation())
     Q_PRIVATE_SLOT(d_func(), void _q_cacheLoadReadyRead())

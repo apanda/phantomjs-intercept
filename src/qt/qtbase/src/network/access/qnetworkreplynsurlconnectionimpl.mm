@@ -447,4 +447,7 @@ qint64 QNetworkReplyNSURLConnectionImpl::readData(char *data, qint64 maxlen)
     return canRead;
 }
 
+void QNetworkReplyNSURLConnectionImpl::deliverFinish() {
+}
+
 QT_END_NAMESPACE

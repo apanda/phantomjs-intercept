@@ -78,6 +78,7 @@ public:
     qint64 size() const;
 
     virtual qint64 readData(char *data, qint64 maxlen);
+    virtual void deliverFinish();
 public Q_SLOTS:
     void readyReadOutgoingData();
 

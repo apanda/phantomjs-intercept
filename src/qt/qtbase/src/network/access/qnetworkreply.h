@@ -147,6 +147,8 @@ public:
     void ignoreSslErrors(const QList<QSslError> &errors);
 #endif
 
+    virtual void deliverFinish() = 0;
+
 public Q_SLOTS:
     virtual void abort() = 0;
     virtual void ignoreSslErrors();

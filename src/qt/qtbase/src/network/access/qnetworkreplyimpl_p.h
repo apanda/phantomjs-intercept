@@ -87,6 +87,8 @@ public:
 
     virtual qint64 readData(char *data, qint64 maxlen);
     virtual bool event(QEvent *);
+    
+    virtual void deliverFinish();
 
     Q_DECLARE_PRIVATE(QNetworkReplyImpl)
     Q_PRIVATE_SLOT(d_func(), void _q_startOperation())
@@ -231,6 +233,7 @@ public:
     QDisabledNetworkReply(QObject *parent, const QNetworkRequest &req,
                           QNetworkAccessManager::Operation op);
     ~QDisabledNetworkReply();
+    virtual void deliverFinish();
 
     void abort() { }
 protected:

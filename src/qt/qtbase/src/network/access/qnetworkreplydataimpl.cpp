@@ -96,6 +96,9 @@ QNetworkReplyDataImpl::QNetworkReplyDataImpl(QObject *parent, const QNetworkRequ
     }
 }
 
+void QNetworkReplyDataImpl::deliverFinish() {
+}
+
 void QNetworkReplyDataImpl::close()
 {
     QNetworkReply::close();

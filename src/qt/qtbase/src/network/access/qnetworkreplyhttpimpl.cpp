@@ -2066,6 +2066,9 @@ void QNetworkReplyHttpImplPrivate::completeCacheSave()
     cacheEnabled = false;
 }
 
+void QNetworkReplyHttpImpl::deliverFinish() {
+}
+
 QT_END_NAMESPACE
 
 #endif // QT_NO_HTTP

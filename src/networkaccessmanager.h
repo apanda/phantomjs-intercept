@@ -75,6 +75,7 @@ public:
     NoFileAccessReply(QObject *parent, const QNetworkRequest &req, const QNetworkAccessManager::Operation op);
     ~NoFileAccessReply();
     void abort() {}
+    virtual void deliverFinish();
 protected:
     qint64 readData(char *, qint64) { return -1; }
 };
