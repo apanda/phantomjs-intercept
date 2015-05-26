@@ -317,6 +317,7 @@ QNetworkReply *NetworkAccessManager::createRequest(Operation op, const QNetworkR
     data["time"] = QDateTime::currentDateTime();
 
     JsNetworkRequest *jsNetworkRequest = new JsNetworkRequest(&req, this);
+    Terminal::instance()->cout("Emting resource requested");
     emit resourceRequested(data, jsNetworkRequest);
 
     // Pass duty to the superclass - special case: file:/// may be disabled.

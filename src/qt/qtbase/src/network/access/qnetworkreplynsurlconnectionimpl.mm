@@ -318,7 +318,7 @@ void QNetworkReplyNSURLConnectionImpl::readyReadOutgoingData()
 {
     Q_UNUSED(connection)
         replyprivate->setFinished();
-    QMetaObject::invokeMethod(replyprivate->q_func(), "finished", Qt::QueuedConnection);
+    QMetaObject::invokeMethod(replyprivate->q_func(), "finishedDataAvailable", Qt::QueuedConnection);
 }
 
 - (BOOL)connectionShouldUseCredentialStorage:(NSURLConnection*)connection
@@ -448,6 +448,7 @@ qint64 QNetworkReplyNSURLConnectionImpl::readData(char *data, qint64 maxlen)
 }
 
 void QNetworkReplyNSURLConnectionImpl::deliverFinish() {
+    emit finished();
 }
 
 QT_END_NAMESPACE

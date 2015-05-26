@@ -84,7 +84,7 @@ QNetworkReplyDataImpl::QNetworkReplyDataImpl(QObject *parent, const QNetworkRequ
         QMetaObject::invokeMethod(this, "downloadProgress", Qt::QueuedConnection,
                                   Q_ARG(qint64,size), Q_ARG(qint64, size));
         QMetaObject::invokeMethod(this, "readyRead", Qt::QueuedConnection);
-        QMetaObject::invokeMethod(this, "finished", Qt::QueuedConnection);
+        QMetaObject::invokeMethod(this, "finishedDataAvailable", Qt::QueuedConnection);
     } else {
         // something wrong with this URI
         const QString msg = QCoreApplication::translate("QNetworkAccessDataBackend",
@@ -92,11 +92,12 @@ QNetworkReplyDataImpl::QNetworkReplyDataImpl(QObject *parent, const QNetworkRequ
         setError(QNetworkReply::ProtocolFailure, msg);
         QMetaObject::invokeMethod(this, "error", Qt::QueuedConnection,
                                   Q_ARG(QNetworkReply::NetworkError, QNetworkReply::ProtocolFailure));
-        QMetaObject::invokeMethod(this, "finished", Qt::QueuedConnection);
+        QMetaObject::invokeMethod(this, "finishedDataAvailable", Qt::QueuedConnection);
     }
 }
 
 void QNetworkReplyDataImpl::deliverFinish() {
+    QMetaObject::invokeMethod(this, "finished", Qt::QueuedConnection);
 }
 
 void QNetworkReplyDataImpl::close()
