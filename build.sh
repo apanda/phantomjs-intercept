@@ -188,7 +188,7 @@ if [[ "$QTWEBKIT" == "bundled" ]]; then
     WEBKIT_DISABLE+=' gamepad'
 
     ( cd src/qt/qtwebkit &&
-        $QMAKE "WEBKIT_CONFIG -= $WEBKIT_DISABLE" CONFIG-=release CONFIG+=debug $QMAKE_ARGS && make -j$COMPILE_JOBS $MAKE_S )
+        $QMAKE "WEBKIT_CONFIG -= $WEBKIT_DISABLE" CONFIG+=release CONFIG-=debug $QMAKE_ARGS && make -j$COMPILE_JOBS $MAKE_S )
 fi
 
 echo
