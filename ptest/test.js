@@ -1,17 +1,22 @@
 var page = require('webpage').create();
+
 page.onResourceRequested = function(request, obj) {
-      console.log('Resource Request ' + response['url']);
+    console.log('Request ' + request['url']);
 };
 page.onResourceReceived = function(response) {
-      console.log('Ready Read ' + response['url']);
+    console.log('Received ' + request['url']);
 };
 page.onResourceReceiveFinished = function(response) {
       console.log('Receive finished ' + response['url']);
 };
 page.onResourceDataAvailable = function(response, obj) {
-      console.log('Resource data is now available for ' + response['url'] + ' asking to deliver ' + response['status']);
+      console.log('Resource data available ' + response['url']);
       obj.deliverData();
 };
+//page.open('http://usesthis.com/', function (status) {
+        //console.log('Page loaded ' + status);
+        //phantom.exit();
+//});
 page.open('https://news.ycombinator.com/', function (status) {
         console.log('Page loaded ' + status);
         phantom.exit();
