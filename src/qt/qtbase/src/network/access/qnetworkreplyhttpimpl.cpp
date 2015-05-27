@@ -1038,6 +1038,7 @@ void QNetworkReplyHttpImplPrivate::replyDownloadData(QByteArray d)
     if (preMigrationDownloaded != Q_INT64_C(-1))
         totalSize = totalSize.toLongLong() + preMigrationDownloaded;
 
+    emit q->readyReadAvailable();
     emit q->readyRead();
     // emit readyRead before downloadProgress incase this will cause events to be
     // processed and we get into a recursive call (as in QProgressDialog).
@@ -1202,8 +1203,10 @@ void QNetworkReplyHttpImplPrivate::replyDownloadProgressSlot(qint64 bytesReceive
     // Only emit readyRead when actual data is there
     // emit readyRead before downloadProgress incase this will cause events to be
     // processed and we get into a recursive call (as in QProgressDialog).
-    if (bytesDownloaded > 0)
+    if (bytesDownloaded > 0) {
+        emit q->readyReadAvailable();
         emit q->readyRead();
+    }
     //if (downloadProgressSignalChoke.elapsed() >= progressSignalInterval) {
         //downloadProgressSignalChoke.restart();
         //emit q->downloadProgress(bytesDownloaded, bytesTotal);
@@ -1654,6 +1657,8 @@ void QNetworkReplyHttpImplPrivate::_q_cacheLoadReadyRead()
     // processed and we get into a recursive call (as in QProgressDialog).
 
     // This readyRead() goes to the user. The user then may or may not read() anything.
+
+    emit q->readyReadAvailable();
     emit q->readyRead();
     //if (downloadProgressSignalChoke.elapsed() >= progressSignalInterval) {
         //downloadProgressSignalChoke.restart();

@@ -288,6 +288,7 @@ void QNetworkReplyNSURLConnectionImpl::readyReadOutgoingData()
             Q_ARG(qint64, qint64([response expectedContentLength])));
     }
 
+    QMetaObject::invokeMethod(replyprivate->q_func(), "readyReadAvailable", Qt::QueuedConnection);
     QMetaObject::invokeMethod(replyprivate->q_func(), "readyRead", Qt::QueuedConnection);
 }
 

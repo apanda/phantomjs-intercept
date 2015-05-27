@@ -125,6 +125,7 @@ signals:
     void resourceTimeout(const QVariant& data);
 
 private slots:
+    void handleReadyReadAvailable();
     void handleStarted();
     void handleFinished(QNetworkReply *reply);
     void provideAuthentication(QNetworkReply *reply, QAuthenticator *authenticator);

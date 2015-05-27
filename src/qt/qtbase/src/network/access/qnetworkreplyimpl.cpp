@@ -211,6 +211,7 @@ void QNetworkReplyImplPrivate::_q_copyReadyRead()
     pauseNotificationHandling();
     // emit readyRead before downloadProgress incase this will cause events to be
     // processed and we get into a recursive call (as in QProgressDialog).
+    emit q->readyReadAvailable();
     emit q->readyRead();
     //if (downloadProgressSignalChoke.elapsed() >= progressSignalInterval) {
         //downloadProgressSignalChoke.restart();
@@ -653,6 +654,7 @@ void QNetworkReplyImplPrivate::appendDownstreamDataSignalEmissions()
     pauseNotificationHandling();
     // important: At the point of this readyRead(), the data parameter list must be empty,
     // else implicit sharing will trigger memcpy when the user is reading data!
+    emit q->readyReadAvailable();
     emit q->readyRead();
     //// emit readyRead before downloadProgress incase this will cause events to be
     //// processed and we get into a recursive call (as in QProgressDialog).
@@ -764,8 +766,10 @@ void QNetworkReplyImplPrivate::appendDownstreamDataDownloadBuffer(qint64 bytesRe
     // Only emit readyRead when actual data is there
     // emit readyRead before downloadProgress incase this will cause events to be
     // processed and we get into a recursive call (as in QProgressDialog).
-    if (bytesDownloaded > 0)
+    if (bytesDownloaded > 0) {
+        emit q->readyReadAvailable();
         emit q->readyRead();
+    }
     //if (downloadProgressSignalChoke.elapsed() >= progressSignalInterval) {
         //downloadProgressSignalChoke.restart();
         //emit q->downloadProgress(bytesDownloaded, bytesTotal);

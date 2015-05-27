@@ -167,6 +167,8 @@ Q_SIGNALS:
 
     void finishedDataAvailable();
 
+    void readyReadAvailable();
+
 protected:
     explicit QNetworkReply(QObject *parent = 0);
     QNetworkReply(QNetworkReplyPrivate &dd, QObject *parent);

@@ -84,6 +84,7 @@ QNetworkReplyDataImpl::QNetworkReplyDataImpl(QObject *parent, const QNetworkRequ
         QMetaObject::invokeMethod(this, "downloadProgress", Qt::QueuedConnection,
                                   Q_ARG(qint64,size), Q_ARG(qint64, size));
         QMetaObject::invokeMethod(this, "readyRead", Qt::QueuedConnection);
+        QMetaObject::invokeMethod(this, "readyReadAvailable", Qt::QueuedConnection);
         QMetaObject::invokeMethod(this, "finishedDataAvailable", Qt::QueuedConnection);
     } else {
         // something wrong with this URI

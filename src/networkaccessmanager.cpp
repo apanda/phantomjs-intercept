@@ -354,8 +354,14 @@ QNetworkReply *NetworkAccessManager::createRequest(Operation op, const QNetworkR
     connect(reply, SIGNAL(sslErrors(const QList<QSslError> &)), this, SLOT(handleSslErrors(const QList<QSslError> &)));
     connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(handleNetworkError()));
     connect(reply, SIGNAL(finishedDataAvailable()), this, SLOT(handleFinishedDataAvailable()));
+    connect(reply, SIGNAL(readyReadAvailable()), this, SLOT(handleReadyReadAvailable()));
 
     return reply;
+}
+
+void NetworkAccessManager::handleReadyReadAvailable()
+{
+    Terminal::instance()->cout("Got handleReadyReadAvailable call");
 }
 
 void NetworkAccessManager::handleTimeout()
