@@ -13,7 +13,11 @@ page.onResourceDataAvailable = function(response, obj) {
       console.log('Resource data available ' + response['url']);
       obj.deliverData();
 };
-page.open('http://usesthis.com/', function (status) {
+//page.open('http://usesthis.com/', function (status) {
+        //console.log('Page loaded ' + status);
+        //phantom.exit();
+//});
+page.open('https://news.ycombinator.com/', function (status) {
         console.log('Page loaded ' + status);
         phantom.exit();
 });
