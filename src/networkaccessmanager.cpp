@@ -316,9 +316,9 @@ QNetworkReply *NetworkAccessManager::createRequest(Operation op, const QNetworkR
     if (op == QNetworkAccessManager::PostOperation) data["postData"] = postData.data();
     data["time"] = QDateTime::currentDateTime();
 
-    JsNetworkRequest *jsNetworkRequest = new JsNetworkRequest(&req, this);
-    Terminal::instance()->cout("Emting resource requested");
-    emit resourceRequested(data, jsNetworkRequest);
+    JsNetworkRequest jsNetworkRequest(&req, this);
+    Terminal::instance()->cout("Emitting resource requested");
+    emit resourceRequested(data, &jsNetworkRequest);
 
     // Pass duty to the superclass - special case: file:/// may be disabled.
     // This conditional must match QNetworkAccessManager's own idea of what a
@@ -331,9 +331,9 @@ QNetworkReply *NetworkAccessManager::createRequest(Operation op, const QNetworkR
     }
 
     // reparent jsNetworkRequest to make sure that it will be destroyed with QNetworkReply
-    jsNetworkRequest->setParent(replyt);
+    jsNetworkRequest.setParent(replyt);
 
-    QNetworkReply* reply = replyt; // new ProxyNetworkReply(this, replyt);
+    QNetworkReply* reply = replyt;
 
     // If there is a timeout set, create a TimeoutTimer
     if(m_resourceTimeout > 0){
