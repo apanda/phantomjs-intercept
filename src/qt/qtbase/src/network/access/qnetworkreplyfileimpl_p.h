@@ -81,6 +81,8 @@ public:
 
     virtual void deliverFinish();
 
+    virtual void deliverReadyRead();
+
     Q_DECLARE_PRIVATE(QNetworkReplyFileImpl)
 };
 

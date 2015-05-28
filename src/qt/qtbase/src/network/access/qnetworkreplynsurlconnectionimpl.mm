@@ -289,7 +289,6 @@ void QNetworkReplyNSURLConnectionImpl::readyReadOutgoingData()
     }
 
     QMetaObject::invokeMethod(replyprivate->q_func(), "readyReadAvailable", Qt::QueuedConnection);
-    QMetaObject::invokeMethod(replyprivate->q_func(), "readyRead", Qt::QueuedConnection);
 }
 
 - (void)connection:(NSURLConnection*)connection didSendBodyData:(NSInteger)bytesWritten totalBytesWritten:(NSInteger)totalBytesWritten
@@ -450,6 +449,10 @@ qint64 QNetworkReplyNSURLConnectionImpl::readData(char *data, qint64 maxlen)
 
 void QNetworkReplyNSURLConnectionImpl::deliverFinish() {
     emit finished();
+}
+
+void QNetworkReplyNSURLConnectionImpl::deliverReadyRead() {
+    emit readyRead();
 }
 
 QT_END_NAMESPACE

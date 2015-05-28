@@ -74,6 +74,7 @@ class JsNetworkReply : public QObject
 public:
     JsNetworkReply(QNetworkReply* reply, QObject* parent = 0);
     Q_INVOKABLE void deliverData(); 
+    Q_INVOKABLE void deliverReadyRead();
 private:
     QNetworkReply* m_networkReply;
 };
@@ -87,6 +88,7 @@ public:
     ~NoFileAccessReply();
     void abort() {}
     virtual void deliverFinish();
+    virtual void deliverReadyRead();
 protected:
     qint64 readData(char *, qint64) { return -1; }
 };
@@ -120,6 +122,7 @@ signals:
     void resourceRequested(const QVariant& data, QObject *);
     void resourceReceived(const QVariant& data);
     void resourceDataAvailable(const QVariant& data, QObject *);
+    void resourceCanStart(const QVariant& data, QObject *);
     void resourceReceiveFinished(const QVariant& data);
     void resourceError(const QVariant& data);
     void resourceTimeout(const QVariant& data);
@@ -137,6 +140,7 @@ private slots:
 private:
     QHash<QNetworkReply*, int> m_ids;
     QSet<QNetworkReply*> m_started;
+    QSet<QNetworkReply*> m_preStart;
     int m_idCounter;
     QNetworkDiskCache* m_networkDiskCache;
     QVariantMap m_customHeaders;

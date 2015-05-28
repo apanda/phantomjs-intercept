@@ -90,6 +90,8 @@ public:
     
     virtual void deliverFinish();
 
+    virtual void deliverReadyRead();
+
     Q_DECLARE_PRIVATE(QNetworkReplyImpl)
     Q_PRIVATE_SLOT(d_func(), void _q_startOperation())
     Q_PRIVATE_SLOT(d_func(), void _q_copyReadyRead())
@@ -233,7 +235,10 @@ public:
     QDisabledNetworkReply(QObject *parent, const QNetworkRequest &req,
                           QNetworkAccessManager::Operation op);
     ~QDisabledNetworkReply();
+
     virtual void deliverFinish();
+
+    virtual void deliverReadyRead();
 
     void abort() { }
 protected:

@@ -141,8 +141,8 @@ QNetworkReplyFileImpl::QNetworkReplyFileImpl(QObject *parent, const QNetworkRequ
     QMetaObject::invokeMethod(this, "metaDataChanged", Qt::QueuedConnection);
     QMetaObject::invokeMethod(this, "downloadProgress", Qt::QueuedConnection,
         Q_ARG(qint64, d->realFileSize), Q_ARG(qint64, d->realFileSize));
-    QMetaObject::invokeMethod(this, "readyRead", Qt::QueuedConnection);
-    QMetaObject::invokeMethod(this, "finished", Qt::QueuedConnection);
+    QMetaObject::invokeMethod(this, "readyReadAvailable", Qt::QueuedConnection);
+    QMetaObject::invokeMethod(this, "finishedDataAvailable", Qt::QueuedConnection);
 }
 void QNetworkReplyFileImpl::close()
 {
@@ -195,6 +195,11 @@ qint64 QNetworkReplyFileImpl::readData(char *data, qint64 maxlen)
 }
 
 void QNetworkReplyFileImpl::deliverFinish()  {
+    QMetaObject::invokeMethod(this, "finished", Qt::QueuedConnection);
+}
+
+void QNetworkReplyFileImpl::deliverReadyRead()  {
+    QMetaObject::invokeMethod(this, "readyRead", Qt::QueuedConnection);
 }
 
 QT_END_NAMESPACE

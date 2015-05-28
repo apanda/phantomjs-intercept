@@ -13,6 +13,11 @@ page.onResourceDataAvailable = function(response, obj) {
       console.log('Resource data available ' + response['url']);
       obj.deliverData();
 };
+page.onResourceCanStart = function(response, obj) {
+      console.log('Resource can start ' + response['url']);
+      console.log('Telling WK resource can start ' + response['url']);
+      obj.deliverReadyRead();
+};
 //page.open('http://usesthis.com/', function (status) {
         //console.log('Page loaded ' + status);
         //phantom.exit();

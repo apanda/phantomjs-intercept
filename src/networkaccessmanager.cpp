@@ -101,6 +101,10 @@ void NoFileAccessReply::deliverFinish() {
     QMetaObject::invokeMethod(this, "finished", Qt::QueuedConnection);
 }
 
+void NoFileAccessReply::deliverReadyRead() {
+
+}
+
 TimeoutTimer::TimeoutTimer(QObject* parent)
     : QTimer(parent)
 {
@@ -358,11 +362,6 @@ QNetworkReply *NetworkAccessManager::createRequest(Operation op, const QNetworkR
     return reply;
 }
 
-void NetworkAccessManager::handleReadyReadAvailable()
-{
-    Terminal::instance()->cout("Got handleReadyReadAvailable call");
-}
-
 void NetworkAccessManager::handleTimeout()
 {
     TimeoutTimer *nt = qobject_cast<TimeoutTimer*>(sender());
@@ -461,6 +460,7 @@ void NetworkAccessManager::handleFinished(QNetworkReply *reply, const QVariant &
 
     m_ids.remove(reply);
     m_started.remove(reply);
+    m_preStart.remove(reply);
 
     emit resourceReceiveFinished(data);
 }
@@ -508,6 +508,13 @@ void JsNetworkReply::deliverData()
     }
 }
 
+void JsNetworkReply::deliverReadyRead() 
+{
+    if (m_networkReply) {
+        m_networkReply->deliverReadyRead();
+    }
+}
+
 void NetworkAccessManager:: handleFinishedDataAvailable() 
 {
     QNetworkReply* reply = qobject_cast<QNetworkReply*>(sender());
@@ -534,3 +541,37 @@ void NetworkAccessManager:: handleFinishedDataAvailable()
     emit resourceDataAvailable(data, jsReply);
 
 }
+
+void NetworkAccessManager::handleReadyReadAvailable()
+{
+    QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
+    if (!reply)
+        return;
+    if (m_preStart.contains(reply))
+        return;
+
+    m_preStart += reply;
+    
+    QVariantList headers;
+    foreach (QByteArray headerName, reply->rawHeaderList()) {
+        QVariantMap header;
+        header["name"] = QString::fromUtf8(headerName);
+        header["value"] = QString::fromUtf8(reply->rawHeader(headerName));
+        headers += header;
+    }
+
+    QVariantMap data;
+    data["stage"] = "start";
+    data["id"] = m_ids.value(reply);
+    data["url"] = reply->url().toEncoded().data();
+    data["status"] = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute);
+    data["statusText"] = reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute);
+    data["contentType"] = reply->header(QNetworkRequest::ContentTypeHeader);
+    data["bodySize"] = reply->size();
+    data["redirectURL"] = reply->header(QNetworkRequest::LocationHeader);
+    data["headers"] = headers;
+    data["time"] = QDateTime::currentDateTime();
+
+    emit resourceCanStart(data, new JsNetworkReply(reply, reply));
+}
+

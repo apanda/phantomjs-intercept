@@ -97,6 +97,8 @@ public:
 
     virtual void deliverFinish();
 
+    virtual void deliverReadyRead();
+
     Q_DECLARE_PRIVATE(QNetworkReplyHttpImpl)
     Q_PRIVATE_SLOT(d_func(), void _q_startOperation())
     Q_PRIVATE_SLOT(d_func(), void _q_cacheLoadReadyRead())

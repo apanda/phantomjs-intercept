@@ -149,6 +149,8 @@ public:
 
     virtual void deliverFinish() = 0;
 
+    virtual void deliverReadyRead() = 0;
+
 public Q_SLOTS:
     virtual void abort() = 0;
     virtual void ignoreSslErrors();
