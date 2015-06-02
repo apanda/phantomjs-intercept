@@ -18,10 +18,6 @@ page.onResourceCanStart = function(response, obj) {
       console.log('Telling WK resource can start ' + response['url']);
       obj.deliverReadyRead();
 };
-//page.open('http://usesthis.com/', function (status) {
-        //console.log('Page loaded ' + status);
-        //phantom.exit();
-//});
 page.open('https://news.ycombinator.com/', function (status) {
         console.log('Page loaded ' + status);
         phantom.exit();
