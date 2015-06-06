@@ -44,6 +44,20 @@ class WebpageCallbacks;
 class NetworkAccessManager;
 class QWebInspector;
 class Phantom;
+namespace WebCore {
+    class DOMTimer;
+}
+
+class JsTimerObject : public QObject
+{
+    Q_OBJECT
+    public:
+        JsTimerObject(WebCore::DOMTimer* timer, CustomPage* page, QObject* parent = 0);
+        Q_INVOKABLE void fire();
+    private:
+        WebCore::DOMTimer* m_timer;
+        CustomPage* m_page;
+};
 
 class WebPage : public QObject, public QWebFrame::PrintCallback
 {
@@ -502,12 +516,14 @@ signals:
     void rawPageCreated(QObject *page);
     void closing(QObject *page);
     void repaintRequested(const int x, const int y, const int width, const int height);
+    void timerSet(const QVariant& timerData, QObject* timerRequest);
 
 private slots:
     void finish(bool ok);
     void setupFrame(QWebFrame *frame = NULL);
     void updateLoadingProgress(int progress);
     void handleRepaintRequested(const QRect &dirtyRect);
+    void handleSetTimer(WebCore::DOMTimer* timer, int interval, bool singleShot);
 
 private:
     QImage renderImage();

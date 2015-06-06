@@ -163,7 +163,7 @@ public:
     void initializeWebCorePage();
 
     void fireTimer(WebCore::DOMTimer*);
-    virtual bool setTimer(WebCore::DOMTimer*);
+    virtual bool setTimer(WebCore::DOMTimer*, int, bool);
     virtual void show() = 0;
     virtual void setFocus() = 0;
     virtual void unfocus() = 0;

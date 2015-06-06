@@ -20,6 +20,10 @@ page.onResourceCanStart = function(response, obj) {
       console.log('Telling WK resource can start ' + response['url']);
       obj.deliverReadyRead();
 };
+page.onTimerSet = function(info, timer) {
+    console.log('Timer being set, interval ' + info['interval'] + ' single shot ' + info['singleShot']);
+    timer.fire();
+}
 //page.open('https://news.ycombinator.com/', function (status) {
         //console.log('Page loaded ' + status);
         //phantom.exit();

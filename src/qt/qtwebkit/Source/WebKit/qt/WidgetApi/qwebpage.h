@@ -443,7 +443,7 @@ protected:
 
     virtual QString userAgentForUrl(const QUrl& url) const;
 
-    virtual bool setTimer(WebCore::DOMTimer*);
+    virtual bool setTimer(WebCore::DOMTimer*, int, bool);
 
 private:
     Q_PRIVATE_SLOT(d, void _q_onLoadProgressChanged(int))

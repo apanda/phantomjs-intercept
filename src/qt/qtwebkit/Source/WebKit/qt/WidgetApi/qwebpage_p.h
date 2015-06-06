@@ -96,7 +96,7 @@ public:
     virtual void databaseQuotaExceeded(QWebFrameAdapter*, const QString& databaseName) OVERRIDE;
     virtual void applicationCacheQuotaExceeded(QWebSecurityOrigin*, quint64 defaultOriginQuota, quint64 totalSpaceNeeded) OVERRIDE;
     virtual void setToolTip(const QString&) OVERRIDE;
-    virtual bool setTimer(WebCore::DOMTimer*) OVERRIDE;
+    virtual bool setTimer(WebCore::DOMTimer*, int, bool) OVERRIDE;
 #if USE(QT_MULTIMEDIA)
     virtual QWebFullScreenVideoHandler* createFullScreenVideoHandler() OVERRIDE;
 #endif

@@ -68,7 +68,7 @@ public:
     virtual void chromeDestroyed();
 
     // @apanda: Doing it this way to allow build while things are weird
-    virtual bool setTimer(DOMTimer*);
+    virtual bool setTimer(DOMTimer*, int, bool);
 
     virtual void setWindowRect(const FloatRect&);
     virtual FloatRect windowRect();

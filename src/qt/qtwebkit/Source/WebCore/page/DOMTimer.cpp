@@ -70,7 +70,7 @@ DOMTimer::DOMTimer(ScriptExecutionContext* context, PassOwnPtr<ScheduledAction> 
 
     double intervalMilliseconds = intervalClampedToMinimum(interval, context->minimumTimerInterval());
     
-    if (m_document->frame()->page()->chrome().client()->setTimer(this)) {
+    if (m_document->frame()->page()->chrome().client()->setTimer(this, interval, singleShot)) {
         if (singleShot)
             startOneShot(intervalMilliseconds);
         else

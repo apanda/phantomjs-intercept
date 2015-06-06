@@ -271,13 +271,13 @@ QSize QWebPagePrivate::viewportSize() const
     return q->viewportSize();
 }
 
-bool QWebPagePrivate::setTimer(WebCore::DOMTimer* timer)
+bool QWebPagePrivate::setTimer(WebCore::DOMTimer* timer, int interval, bool singleShot)
 {
-    return q->setTimer(timer);
+    return q->setTimer(timer, interval, singleShot);
 }
 
 
-bool QWebPage::setTimer(WebCore::DOMTimer*)
+bool QWebPage::setTimer(WebCore::DOMTimer*, int, bool)
 {
     return true;
 }

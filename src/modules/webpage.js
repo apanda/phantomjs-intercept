@@ -272,6 +272,8 @@ function decorateNewPage(opts, page) {
 
     definePageSignalHandler(page, handlers, "onClosing", "closing");
 
+    definePageSignalHandler(page, handlers, "onTimerSet", "timerSet");
+
     // Private callback for "page.open()"
     definePageSignalHandler(page, handlers, "_onPageOpenFinished", "loadFinished");
 

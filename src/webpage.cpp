@@ -31,6 +31,7 @@
 #include "webpage.h"
 
 #include <math.h>
+#include <sstream>
 
 #include <QApplication>
 #include <QDesktopServices>
@@ -117,6 +118,8 @@ public:
         m_cookieJar = cookieJar;
     }
 
+signals:
+    void signalTimer(WebCore::DOMTimer* timer, int interval, bool singleShot);
 public slots:
     bool shouldInterruptJavaScript() {
         m_webPage->javascriptInterrupt();
@@ -132,8 +135,8 @@ public slots:
 
 protected:
     
-    bool setTimer(WebCore::DOMTimer* timer) {
-        Terminal::instance()->cout("Received setTimer");
+    bool setTimer(WebCore::DOMTimer* timer, int interval, bool singleShot) {
+        emit signalTimer(timer, interval, singleShot);
         //fireTimer(timer);
         return false;
     }
@@ -380,6 +383,7 @@ WebPage::WebPage(QObject *parent, const QUrl &baseUrl)
     connect(m_customWebPage, SIGNAL(windowCloseRequested()), this, SLOT(close()), Qt::QueuedConnection);
     connect(m_customWebPage, SIGNAL(loadProgress(int)), this, SLOT(updateLoadingProgress(int)));
     connect(m_customWebPage, SIGNAL(repaintRequested(QRect)), this, SLOT(handleRepaintRequested(QRect)), Qt::QueuedConnection);
+    connect(m_customWebPage, SIGNAL(signalTimer(WebCore::DOMTimer*, int, bool)), this, SLOT(handleSetTimer(WebCore::DOMTimer*, int, bool)), Qt::QueuedConnection);
 
 
     // Start with transparent background.
@@ -1651,6 +1655,26 @@ void WebPage::stopJavaScript()
 void WebPage::clearMemoryCache()
 {
     QWebSettings::clearMemoryCaches();
+}
+
+void WebPage::handleSetTimer(WebCore::DOMTimer* timer, int interval, bool singleShot)
+{
+    QVariantMap timerInfo;
+    timerInfo["interval"] = interval;
+    timerInfo["singleShot"] = singleShot;
+    JsTimerObject* jsTimer = new JsTimerObject(timer, m_customWebPage, this);
+    emit timerSet(timerInfo, jsTimer);
+}
+
+JsTimerObject::JsTimerObject(WebCore::DOMTimer* timer, CustomPage* page, QObject* parent) 
+    : QObject(parent)
+    , m_timer(timer)
+    , m_page (page) 
+{
+}
+
+void JsTimerObject::fire() {
+    m_page->fireTimer(m_timer);
 }
 
 #include "webpage.moc"
