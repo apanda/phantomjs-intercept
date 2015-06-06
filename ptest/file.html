@@ -1,4 +1,13 @@
 <html>
+    <head>
+        <script>
+            setTimeout(function(){ alert("Hello"); }, 3);
+            var xhr = new XMLHttpRequest();
+            xhr.onload = function() { alert("Load"); }
+            xhr.open('GET', 'foo.txt', true);
+            xhr.send(null);
+        </script>
+    </head>
 	<body>
 		Hi
 	</body>

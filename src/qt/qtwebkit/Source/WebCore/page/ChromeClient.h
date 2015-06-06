@@ -374,6 +374,8 @@ public:
     virtual void incrementActivePageCount() { }
     virtual void decrementActivePageCount() { }
 
+    // @apanda: Doing it this way to allow build while things are weird
+    virtual bool setTimer(DOMTimer* timer) {return true; }
 protected:
     virtual ~ChromeClient() { }
 };

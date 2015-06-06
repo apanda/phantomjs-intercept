@@ -271,6 +271,22 @@ QSize QWebPagePrivate::viewportSize() const
     return q->viewportSize();
 }
 
+bool QWebPagePrivate::setTimer(WebCore::DOMTimer* timer)
+{
+    return q->setTimer(timer);
+}
+
+
+bool QWebPage::setTimer(WebCore::DOMTimer*)
+{
+    return true;
+}
+
+void QWebPage::fireTimer(WebCore::DOMTimer* timer)
+{
+    d->fireTimer(timer);
+}
+
 QWebPageAdapter *QWebPagePrivate::createWindow(bool dialog)
 {
     QWebPage *newPage = q->createWindow(dialog ? QWebPage::WebModalDialog : QWebPage::WebBrowserWindow);

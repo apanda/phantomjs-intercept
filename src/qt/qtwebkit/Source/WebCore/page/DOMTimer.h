@@ -33,6 +33,8 @@
 
 namespace WebCore {
 
+    class Document;
+
     class ScheduledAction;
 
     class DOMTimer : public SuspendableTimer {
@@ -52,6 +54,8 @@ namespace WebCore {
         // to events like moving a tab to the background.
         void adjustMinimumTimerInterval(double oldMinimumTimerInterval);
 
+        void fire();
+
     private:
         DOMTimer(ScriptExecutionContext*, PassOwnPtr<ScheduledAction>, int interval, bool singleShot);
         virtual void fired();
@@ -60,12 +64,13 @@ namespace WebCore {
 
         // Retuns timer fire time rounded to the next multiple of timer alignment interval.
         virtual double alignedFireTime(double) const;
-
+        
         int m_timeoutId;
         int m_nestingLevel;
         OwnPtr<ScheduledAction> m_action;
         int m_originalInterval;
         bool m_shouldForwardUserGesture;
+        Document* m_document;
     };
 
 } // namespace WebCore

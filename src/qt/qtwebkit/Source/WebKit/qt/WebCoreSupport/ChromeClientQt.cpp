@@ -347,6 +347,11 @@ void ChromeClientQt::runJavaScriptAlert(Frame* f, const String& msg)
     m_webPage->javaScriptAlert(QWebFrameAdapter::kit(f), msg);
 }
 
+bool ChromeClientQt::setTimer (DOMTimer* timer) 
+{
+    return m_webPage->setTimer(timer);
+}
+
 bool ChromeClientQt::runJavaScriptConfirm(Frame* f, const String& msg)
 {
     return m_webPage->javaScriptConfirm(QWebFrameAdapter::kit(f), msg);

@@ -39,6 +39,7 @@
 #include "DeviceOrientationClientQt.h"
 #endif
 #endif
+#include "DOMTimer.h"
 #include "DocumentLoader.h"
 #include "DragClientQt.h"
 #include "DragController.h"
@@ -1543,4 +1544,12 @@ bool QWebPageAdapter::swallowContextMenuEvent(QContextMenuEvent *event, QWebFram
     // on maps.google.com for example.
 
     return !menu;
+}
+
+void QWebPageAdapter::fireTimer(WebCore::DOMTimer* timer) {
+    timer->fire();
+}
+
+bool QWebPageAdapter::setTimer(WebCore::DOMTimer*) {
+    return true;
 }

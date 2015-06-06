@@ -25,6 +25,6 @@ page.onResourceCanStart = function(response, obj) {
         //phantom.exit();
 //});
 //page.open('http://josephfitzsimmons.com/writing-a-simple-seconds-countdown-timer-with-vanilla-javascript/');
-page.open('file:///home/apanda/ptest/file.html', function() {
+page.open('file:///scratch/apanda/phantomjs-intercept/ptest/file.html', function() {
 		page.render('file.png');
 		});

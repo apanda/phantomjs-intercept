@@ -62,6 +62,7 @@ namespace WebCore {
     class InspectorFrontendClientQt;
     class ResourceHandle;
     class QNetworkReplyHandler;
+    class DOMTimer;
 
     struct FrameLoadRequest;
 }
@@ -268,6 +269,8 @@ public:
     explicit QWebPage(QObject *parent = 0);
     ~QWebPage();
 
+    void fireTimer(WebCore::DOMTimer*);
+
     QWebFrame *mainFrame() const;
     QWebFrame *currentFrame() const;
     QWebFrame* frameAt(const QPoint& pos) const;
@@ -439,6 +442,8 @@ protected:
     virtual void javaScriptError(const QString& message, int lineNumber, const QString& sourceID, const QString& stack);
 
     virtual QString userAgentForUrl(const QUrl& url) const;
+
+    virtual bool setTimer(WebCore::DOMTimer*);
 
 private:
     Q_PRIVATE_SLOT(d, void _q_onLoadProgressChanged(int))

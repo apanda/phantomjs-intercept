@@ -64,6 +64,7 @@
 #include "callback.h"
 #include "cookiejar.h"
 #include "system.h"
+#include "terminal.h"
 
 #ifdef Q_OS_WIN32
 #include <io.h>
@@ -79,6 +80,10 @@
 
 #define STDOUT_FILENAME "/dev/stdout"
 #define STDERR_FILENAME "/dev/stderr"
+
+namespace WebCore {
+    class DOMTimer;
+}
 
 
 /**
@@ -126,6 +131,13 @@ public slots:
     }
 
 protected:
+    
+    bool setTimer(WebCore::DOMTimer* timer) {
+        Terminal::instance()->cout("Received setTimer");
+        //fireTimer(timer);
+        return false;
+    }
+
     bool supportsExtension(Extension extension) const {
         return extension == ChooseMultipleFilesExtension;
     }

@@ -45,6 +45,7 @@ class IntRect;
 class Node;
 class NodeList;
 class Frame;
+class DOMTimer;
 }
 
 QT_BEGIN_NAMESPACE
@@ -95,6 +96,7 @@ public:
     virtual void databaseQuotaExceeded(QWebFrameAdapter*, const QString& databaseName) OVERRIDE;
     virtual void applicationCacheQuotaExceeded(QWebSecurityOrigin*, quint64 defaultOriginQuota, quint64 totalSpaceNeeded) OVERRIDE;
     virtual void setToolTip(const QString&) OVERRIDE;
+    virtual bool setTimer(WebCore::DOMTimer*) OVERRIDE;
 #if USE(QT_MULTIMEDIA)
     virtual QWebFullScreenVideoHandler* createFullScreenVideoHandler() OVERRIDE;
 #endif

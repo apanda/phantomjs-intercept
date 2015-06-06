@@ -59,12 +59,16 @@ struct ViewportArguments;
 class FullScreenVideoQt;
 #endif
 class TextureMapperLayerClientQt;
+class DOMTimer;
 
 class ChromeClientQt : public ChromeClient {
 public:
     ChromeClientQt(QWebPageAdapter*);
     virtual ~ChromeClientQt();
     virtual void chromeDestroyed();
+
+    // @apanda: Doing it this way to allow build while things are weird
+    virtual bool setTimer(DOMTimer*);
 
     virtual void setWindowRect(const FloatRect&);
     virtual FloatRect windowRect();

@@ -52,6 +52,7 @@ class DeviceMotionClient;
 class GeolocationClientQt;
 class Page;
 class UndoStep;
+class DOMTimer;
 }
 
 class QtPluginWidgetAdapter;
@@ -161,6 +162,8 @@ public:
     // we properly initialized the style factory callbacks.
     void initializeWebCorePage();
 
+    void fireTimer(WebCore::DOMTimer*);
+    virtual bool setTimer(WebCore::DOMTimer*);
     virtual void show() = 0;
     virtual void setFocus() = 0;
     virtual void unfocus() = 0;

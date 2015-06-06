@@ -27,6 +27,9 @@
 #include "config.h"
 #include "DOMTimer.h"
 
+#include "Document.h"
+#include "Chrome.h"
+#include "ChromeClient.h"
 #include "InspectorInstrumentation.h"
 #include "ScheduledAction.h"
 #include "ScriptExecutionContext.h"
@@ -58,6 +61,7 @@ DOMTimer::DOMTimer(ScriptExecutionContext* context, PassOwnPtr<ScheduledAction> 
     , m_action(action)
     , m_originalInterval(interval)
     , m_shouldForwardUserGesture(shouldForwardUserGesture(interval, m_nestingLevel))
+    , m_document(toDocument(context)) 
 {
     // Keep asking for the next id until we're given one that we don't already have.
     do {
@@ -65,16 +69,24 @@ DOMTimer::DOMTimer(ScriptExecutionContext* context, PassOwnPtr<ScheduledAction> 
     } while (!context->addTimeout(m_timeoutId, this));
 
     double intervalMilliseconds = intervalClampedToMinimum(interval, context->minimumTimerInterval());
-    if (singleShot)
-        startOneShot(intervalMilliseconds);
-    else
-        startRepeating(intervalMilliseconds);
+    
+    if (m_document->frame()->page()->chrome().client()->setTimer(this)) {
+        if (singleShot)
+            startOneShot(intervalMilliseconds);
+        else
+            startRepeating(intervalMilliseconds);
+    }
 }
 
 DOMTimer::~DOMTimer()
 {
     if (scriptExecutionContext())
         scriptExecutionContext()->removeTimeout(m_timeoutId);
+}
+
+void DOMTimer::fire()
+{
+    fired();
 }
 
 int DOMTimer::install(ScriptExecutionContext* context, PassOwnPtr<ScheduledAction> action, int timeout, bool singleShot)
