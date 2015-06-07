@@ -214,13 +214,10 @@ bool EventTarget::fireEventListeners(Event* event)
     return !event->defaultPrevented();
 }
         
-void EventTarget::fireEventListeners(Event* event, EventTargetData* d, EventListenerVector& entry)
+
+void EventTarget::fireEventListenersInternal(Event* event, EventTargetData* d, EventListenerVector& entry)
 {
     RefPtr<EventTarget> protect = this;
-    if (toDOMWindow()) {
-        toDOMWindow()->page()->chrome().client()->fireEvent(event, this); 
-    }
-
     // Fire all listeners registered for this event. Don't fire listeners removed
     // during event dispatch. Also, don't fire event listeners added during event
     // dispatch. Conveniently, all new event listeners will be added after 'end',
@@ -264,6 +261,15 @@ void EventTarget::fireEventListeners(Event* event, EventTargetData* d, EventList
     }
 }
 
+void EventTarget::fireEventListeners(Event* event, EventTargetData* d, EventListenerVector& entry)
+{
+    RefPtr<EventTarget> protect = this;
+    if (!toDOMWindow() ||
+        toDOMWindow()->page()->chrome().client()->fireEvent(event, d, &entry, this)) {
+        fireEventListenersInternal(event, d, entry);
+    }
+}
+
 const EventListenerVector& EventTarget::getEventListeners(const AtomicString& eventType)
 {
     DEFINE_STATIC_LOCAL(EventListenerVector, emptyVector, ());
@@ -294,6 +300,11 @@ void EventTarget::removeAllEventListeners()
             d->firingEventIterators->at(i).end = 0;
         }
     }
+}
+
+void EventTarget::deliverEvent(EventTarget* target , Event* ev, EventTargetData* d, void* v)
+{
+    target->fireEventListenersInternal(ev, d, *(EventListenerVector*)v);
 }
 
 } // namespace WebCore

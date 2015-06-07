@@ -77,6 +77,7 @@ struct FrameLoadRequest;
 struct GraphicsDeviceAdapter;
 struct ViewportArguments;
 struct WindowFeatures;
+class EventTargetData;
 
 class ChromeClient {
 public:
@@ -376,7 +377,10 @@ public:
 
     // @apanda: Doing it this way to allow build while things are weird
     virtual bool setTimer(DOMTimer* timer __attribute__((unused)), int ival __attribute__((unused)), bool oneshot __attribute__((unused))) {return true; }
-    virtual bool fireEvent(Event* event __attribute__((unused)), EventTarget* target __attribute__((unused))) {return true; }
+    virtual bool fireEvent(Event* event __attribute__((unused)), 
+                           EventTargetData* d __attribute__((unused)), 
+                           EventListenerVector* entry __attribute__((unused)), 
+                           EventTarget* target __attribute__((unused))) {return true; }
 protected:
     virtual ~ChromeClient() { }
 };

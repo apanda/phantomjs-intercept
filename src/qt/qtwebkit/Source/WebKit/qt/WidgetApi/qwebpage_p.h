@@ -49,6 +49,7 @@ class Frame;
 class DOMTimer;
 class Event;
 class EventTarget;
+class EventTargetData;
 }
 
 QT_BEGIN_NAMESPACE
@@ -100,7 +101,11 @@ public:
     virtual void applicationCacheQuotaExceeded(QWebSecurityOrigin*, quint64 defaultOriginQuota, quint64 totalSpaceNeeded) OVERRIDE;
     virtual void setToolTip(const QString&) OVERRIDE;
     virtual bool setTimer(WebCore::DOMTimer*, int, bool) OVERRIDE;
-    virtual bool fireEvent(const std::string& type, WebCore::Event* event, WebCore::EventTarget* target) OVERRIDE;
+    virtual bool fireEvent(const std::string& type, 
+                           WebCore::Event* event, 
+                           WebCore::EventTargetData* d, 
+                           void* entry,
+                           WebCore::EventTarget* target) OVERRIDE;
 #if USE(QT_MULTIMEDIA)
     virtual QWebFullScreenVideoHandler* createFullScreenVideoHandler() OVERRIDE;
 #endif

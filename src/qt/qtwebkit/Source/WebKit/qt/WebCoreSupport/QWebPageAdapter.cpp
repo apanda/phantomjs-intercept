@@ -40,6 +40,7 @@
 #endif
 #endif
 #include "DOMTimer.h"
+#include "EventTarget.h"
 #include "DocumentLoader.h"
 #include "DragClientQt.h"
 #include "DragController.h"
@@ -1546,7 +1547,7 @@ bool QWebPageAdapter::swallowContextMenuEvent(QContextMenuEvent *event, QWebFram
     return !menu;
 }
 
-void QWebPageAdapter::fireTimer(WebCore::DOMTimer* timer) {
+void QWebPageAdapter::deliverTimer(WebCore::DOMTimer* timer) {
     timer->fire();
 }
 
@@ -1554,6 +1555,18 @@ bool QWebPageAdapter::setTimer(WebCore::DOMTimer* timer __attribute__((unused)),
     return true;
 }
 
-bool QWebPageAdapter::fireEvent(const std::string& type, WebCore::Event* event, WebCore::EventTarget* target) {
+
+bool QWebPageAdapter::fireEvent(const std::string& type, 
+                           WebCore::Event* event, 
+                           WebCore::EventTargetData* d, 
+                           void* entry,
+                           WebCore::EventTarget* target) {
     return true;
+}
+
+void QWebPageAdapter::deliverEvent(WebCore::Event* event, 
+                                   WebCore::EventTargetData* d, 
+                                   void* entry,
+                                   WebCore::EventTarget* target) {
+    EventTarget::deliverEvent(target , event, d, entry);
 }

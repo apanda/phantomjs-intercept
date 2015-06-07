@@ -56,6 +56,7 @@ class UndoStep;
 class DOMTimer;
 class Event;
 class EventTarget;
+class EventTargetData;
 }
 
 class QtPluginWidgetAdapter;
@@ -165,9 +166,17 @@ public:
     // we properly initialized the style factory callbacks.
     void initializeWebCorePage();
 
-    void fireTimer(WebCore::DOMTimer*);
+    void deliverTimer(WebCore::DOMTimer*);
     virtual bool setTimer(WebCore::DOMTimer*, int, bool);
-    virtual bool fireEvent(const std::string& type, WebCore::Event* event, WebCore::EventTarget* target);
+    virtual bool fireEvent(const std::string& type, 
+                           WebCore::Event* event, 
+                           WebCore::EventTargetData* d, 
+                           void* entry,
+                           WebCore::EventTarget* target);
+    void deliverEvent(WebCore::Event* event, 
+                      WebCore::EventTargetData* d, 
+                      void* entry,
+                      WebCore::EventTarget* target);
     virtual void show() = 0;
     virtual void setFocus() = 0;
     virtual void unfocus() = 0;

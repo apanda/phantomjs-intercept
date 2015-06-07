@@ -67,6 +67,7 @@ namespace WebCore {
     struct FrameLoadRequest;
     class EventTarget;
     class Event;
+    class EventTargetData;
 }
 
 class QWEBKITWIDGETS_EXPORT QWebPage : public QObject {
@@ -271,7 +272,11 @@ public:
     explicit QWebPage(QObject *parent = 0);
     ~QWebPage();
 
-    void fireTimer(WebCore::DOMTimer*);
+    void deliverTimer(WebCore::DOMTimer*);
+    void deliverEvent(WebCore::Event* event, 
+                      WebCore::EventTargetData* d, 
+                      void* entry,
+                      WebCore::EventTarget* target);
 
     QWebFrame *mainFrame() const;
     QWebFrame *currentFrame() const;
@@ -446,7 +451,11 @@ protected:
     virtual QString userAgentForUrl(const QUrl& url) const;
 
     virtual bool setTimer(WebCore::DOMTimer*, int, bool);
-    virtual bool fireEvent(const std::string& type, WebCore::Event* event, WebCore::EventTarget* target);
+    virtual bool fireEvent(const std::string& type, 
+                           WebCore::Event* event, 
+                           WebCore::EventTargetData* d, 
+                           void* entry,
+                           WebCore::EventTarget* target);
 
 private:
     Q_PRIVATE_SLOT(d, void _q_onLoadProgressChanged(int))

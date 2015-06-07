@@ -141,10 +141,19 @@ protected:
         return false;
     }
 
-    bool fireEvent(const std::string& type, WebCore::Event* event, WebCore::EventTarget* target) {
+    bool fireEvent(const std::string& type, 
+               WebCore::Event* event, 
+               WebCore::EventTargetData* d, 
+               void* entry,
+               WebCore::EventTarget* target) {
         std::stringstream buffer;
         buffer << "Event fired " << type;
         Terminal::instance()->cout(buffer.str().c_str());
+        deliverEvent(event, 
+                     d, 
+                     entry,
+                     target);
+        return false;
     }
 
     bool supportsExtension(Extension extension) const {
@@ -1680,7 +1689,7 @@ JsTimerObject::JsTimerObject(WebCore::DOMTimer* timer, CustomPage* page, QObject
 }
 
 void JsTimerObject::fire() {
-    m_page->fireTimer(m_timer);
+    m_page->deliverTimer(m_timer);
 }
 
 #include "webpage.moc"

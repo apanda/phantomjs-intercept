@@ -276,12 +276,20 @@ bool QWebPagePrivate::setTimer(WebCore::DOMTimer* timer, int interval, bool sing
     return q->setTimer(timer, interval, singleShot);
 }
 
-bool QWebPagePrivate::fireEvent(const std::string& type, WebCore::Event* event, WebCore::EventTarget* target) 
+bool QWebPagePrivate::fireEvent(const std::string& type, 
+               WebCore::Event* event, 
+               EventTargetData* d, 
+               void* entry,
+               WebCore::EventTarget* target)
 {
-    return q->fireEvent(type, event, target);
+    return q->fireEvent(type, event, d, entry, target);
 }
 
-bool QWebPage::fireEvent(const std::string& type, WebCore::Event* event, WebCore::EventTarget* target)
+bool QWebPage::fireEvent(const std::string& type, 
+               WebCore::Event* event, 
+               WebCore::EventTargetData* d, 
+               void* entry,
+               WebCore::EventTarget* target)
 {
     return true;
 }
@@ -291,9 +299,16 @@ bool QWebPage::setTimer(WebCore::DOMTimer*, int, bool)
     return true;
 }
 
-void QWebPage::fireTimer(WebCore::DOMTimer* timer)
+void QWebPage::deliverTimer(WebCore::DOMTimer* timer)
 {
-    d->fireTimer(timer);
+    d->deliverTimer(timer);
+}
+
+void QWebPage::deliverEvent(WebCore::Event* event, 
+                  WebCore::EventTargetData* dp, 
+                  void* entry,
+                  WebCore::EventTarget* target) {
+    d->deliverEvent(event, dp, entry, target);
 }
 
 QWebPageAdapter *QWebPagePrivate::createWindow(bool dialog)

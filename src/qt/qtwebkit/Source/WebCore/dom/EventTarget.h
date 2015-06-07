@@ -136,6 +136,8 @@ namespace WebCore {
         void visitJSEventListeners(JSC::SlotVisitor&);
         void invalidateJSEventListeners(JSC::JSObject*);
 
+        static void deliverEvent(EventTarget*, Event*, EventTargetData*, void*);
+
     protected:
         virtual ~EventTarget();
         
@@ -147,6 +149,7 @@ namespace WebCore {
         virtual void derefEventTarget() = 0;
         
         void fireEventListeners(Event*, EventTargetData*, EventListenerVector&);
+        void fireEventListenersInternal(Event*, EventTargetData*, EventListenerVector&);
 
         friend class EventListenerIterator;
     };

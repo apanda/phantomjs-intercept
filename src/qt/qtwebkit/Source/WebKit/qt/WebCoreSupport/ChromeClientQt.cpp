@@ -353,9 +353,12 @@ bool ChromeClientQt::setTimer (DOMTimer* timer, int interval, bool singleShot)
     return m_webPage->setTimer(timer, interval, singleShot);
 }
 
-bool ChromeClientQt::fireEvent(Event* event, EventTarget* target)
+bool ChromeClientQt::fireEvent(Event* event, 
+                               EventTargetData* d, 
+                               EventListenerVector* entry,
+                               EventTarget* target)
 {
-    return m_webPage->fireEvent(std::string(event->type().string().ascii().data()), event, target);
+    return m_webPage->fireEvent(std::string(event->type().string().ascii().data()), event, d, entry, target);
 }
 
 bool ChromeClientQt::runJavaScriptConfirm(Frame* f, const String& msg)

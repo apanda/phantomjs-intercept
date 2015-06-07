@@ -46,6 +46,7 @@ class QWebInspector;
 class Phantom;
 namespace WebCore {
     class DOMTimer;
+    class EventTargetData;
 }
 
 class JsTimerObject : public QObject
