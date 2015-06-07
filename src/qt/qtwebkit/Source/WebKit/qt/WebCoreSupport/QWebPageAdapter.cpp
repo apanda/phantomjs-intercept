@@ -1553,3 +1553,7 @@ void QWebPageAdapter::fireTimer(WebCore::DOMTimer* timer) {
 bool QWebPageAdapter::setTimer(WebCore::DOMTimer* timer __attribute__((unused)), int ival __attribute__((unused)), bool singleShot __attribute__((unused))) {
     return true;
 }
+
+bool QWebPageAdapter::fireEvent(const std::string& type, WebCore::Event* event, WebCore::EventTarget* target) {
+    return true;
+}

@@ -68,6 +68,7 @@
 #include "qwebsecurityorigin.h"
 #include "qwebsecurityorigin_p.h"
 #include "qwebsettings.h"
+#include "Event.h"
 
 #include <qabstractanimation.h>
 #include <qdebug.h>
@@ -350,6 +351,11 @@ void ChromeClientQt::runJavaScriptAlert(Frame* f, const String& msg)
 bool ChromeClientQt::setTimer (DOMTimer* timer, int interval, bool singleShot) 
 {
     return m_webPage->setTimer(timer, interval, singleShot);
+}
+
+bool ChromeClientQt::fireEvent(Event* event, EventTarget* target)
+{
+    return m_webPage->fireEvent(std::string(event->type().string().ascii().data()), event, target);
 }
 
 bool ChromeClientQt::runJavaScriptConfirm(Frame* f, const String& msg)

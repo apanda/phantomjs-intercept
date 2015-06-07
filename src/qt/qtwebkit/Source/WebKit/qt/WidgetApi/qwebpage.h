@@ -65,6 +65,8 @@ namespace WebCore {
     class DOMTimer;
 
     struct FrameLoadRequest;
+    class EventTarget;
+    class Event;
 }
 
 class QWEBKITWIDGETS_EXPORT QWebPage : public QObject {
@@ -444,6 +446,7 @@ protected:
     virtual QString userAgentForUrl(const QUrl& url) const;
 
     virtual bool setTimer(WebCore::DOMTimer*, int, bool);
+    virtual bool fireEvent(const std::string& type, WebCore::Event* event, WebCore::EventTarget* target);
 
 private:
     Q_PRIVATE_SLOT(d, void _q_onLoadProgressChanged(int))

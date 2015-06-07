@@ -60,6 +60,8 @@ class FullScreenVideoQt;
 #endif
 class TextureMapperLayerClientQt;
 class DOMTimer;
+class Event;
+class EventTarget;
 
 class ChromeClientQt : public ChromeClient {
 public:
@@ -69,6 +71,7 @@ public:
 
     // @apanda: Doing it this way to allow build while things are weird
     virtual bool setTimer(DOMTimer*, int, bool);
+    virtual bool fireEvent(Event* event, EventTarget* target);
 
     virtual void setWindowRect(const FloatRect&);
     virtual FloatRect windowRect();

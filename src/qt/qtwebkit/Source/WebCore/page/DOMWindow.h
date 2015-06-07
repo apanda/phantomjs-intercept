@@ -187,6 +187,8 @@ namespace WebCore {
         int pageXOffset() const { return scrollX(); }
         int pageYOffset() const { return scrollY(); }
 
+        Page* page();
+
         bool closed() const;
 
         unsigned length() const;
@@ -418,7 +420,7 @@ namespace WebCore {
     private:
         explicit DOMWindow(Document*);
 
-        Page* page();
+        //Page* page();
         bool allowedToChangeWindowGeometry() const;
 
         virtual void frameDestroyed() OVERRIDE;

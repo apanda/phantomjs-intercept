@@ -217,11 +217,15 @@ bool EventTarget::fireEventListeners(Event* event)
 void EventTarget::fireEventListeners(Event* event, EventTargetData* d, EventListenerVector& entry)
 {
     RefPtr<EventTarget> protect = this;
+    if (toDOMWindow()) {
+        toDOMWindow()->page()->chrome().client()->fireEvent(event, this); 
+    }
 
     // Fire all listeners registered for this event. Don't fire listeners removed
     // during event dispatch. Also, don't fire event listeners added during event
     // dispatch. Conveniently, all new event listeners will be added after 'end',
     // so iterating to 'end' naturally excludes new event listeners.
+    //
 
     bool userEventWasHandled = false;
     size_t i = 0;

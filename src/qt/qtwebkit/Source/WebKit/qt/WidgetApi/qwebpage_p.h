@@ -32,6 +32,7 @@
 #include <qgraphicssceneevent.h>
 #include <qgraphicswidget.h>
 #include <qnetworkproxy.h>
+#include <string>
 
 
 namespace WebCore {
@@ -46,6 +47,8 @@ class Node;
 class NodeList;
 class Frame;
 class DOMTimer;
+class Event;
+class EventTarget;
 }
 
 QT_BEGIN_NAMESPACE
@@ -97,6 +100,7 @@ public:
     virtual void applicationCacheQuotaExceeded(QWebSecurityOrigin*, quint64 defaultOriginQuota, quint64 totalSpaceNeeded) OVERRIDE;
     virtual void setToolTip(const QString&) OVERRIDE;
     virtual bool setTimer(WebCore::DOMTimer*, int, bool) OVERRIDE;
+    virtual bool fireEvent(const std::string& type, WebCore::Event* event, WebCore::EventTarget* target) OVERRIDE;
 #if USE(QT_MULTIMEDIA)
     virtual QWebFullScreenVideoHandler* createFullScreenVideoHandler() OVERRIDE;
 #endif

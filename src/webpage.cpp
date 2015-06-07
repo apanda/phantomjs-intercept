@@ -141,6 +141,12 @@ protected:
         return false;
     }
 
+    bool fireEvent(const std::string& type, WebCore::Event* event, WebCore::EventTarget* target) {
+        std::stringstream buffer;
+        buffer << "Event fired " << type;
+        Terminal::instance()->cout(buffer.str().c_str());
+    }
+
     bool supportsExtension(Extension extension) const {
         return extension == ChooseMultipleFilesExtension;
     }

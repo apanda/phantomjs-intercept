@@ -276,6 +276,15 @@ bool QWebPagePrivate::setTimer(WebCore::DOMTimer* timer, int interval, bool sing
     return q->setTimer(timer, interval, singleShot);
 }
 
+bool QWebPagePrivate::fireEvent(const std::string& type, WebCore::Event* event, WebCore::EventTarget* target) 
+{
+    return q->fireEvent(type, event, target);
+}
+
+bool QWebPage::fireEvent(const std::string& type, WebCore::Event* event, WebCore::EventTarget* target)
+{
+    return true;
+}
 
 bool QWebPage::setTimer(WebCore::DOMTimer*, int, bool)
 {

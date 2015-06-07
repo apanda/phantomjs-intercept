@@ -34,6 +34,7 @@
 #include <qstring.h>
 #include <qurl.h>
 #include <wtf/ExportMacros.h>
+#include <string>
 
 QT_BEGIN_NAMESPACE
 class QBitArray;
@@ -53,6 +54,8 @@ class GeolocationClientQt;
 class Page;
 class UndoStep;
 class DOMTimer;
+class Event;
+class EventTarget;
 }
 
 class QtPluginWidgetAdapter;
@@ -164,6 +167,7 @@ public:
 
     void fireTimer(WebCore::DOMTimer*);
     virtual bool setTimer(WebCore::DOMTimer*, int, bool);
+    virtual bool fireEvent(const std::string& type, WebCore::Event* event, WebCore::EventTarget* target);
     virtual void show() = 0;
     virtual void setFocus() = 0;
     virtual void unfocus() = 0;
