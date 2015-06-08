@@ -34,8 +34,9 @@
 
 #include "EventListenerMap.h"
 #include "EventNames.h"
+#include "Event.h"
 #include <wtf/Forward.h>
-#include <wtf/HashMap.h>
+#include <wtf/HashSet.h>
 #include <wtf/text/AtomicStringHash.h>
 
 namespace WebCore {
@@ -145,6 +146,8 @@ namespace WebCore {
         virtual EventTargetData* ensureEventTargetData() = 0;
 
     private:
+        typedef HashSet<Event*> EventSet;
+        EventSet m_pendingEvents;
         virtual void refEventTarget() = 0;
         virtual void derefEventTarget() = 0;
         

@@ -23,7 +23,11 @@ page.onResourceCanStart = function(response, obj) {
 page.onTimerSet = function(info, timer) {
     console.log('Timer being set, interval ' + info['interval'] + ' single shot ' + info['singleShot']);
     timer.fire();
-}
+};
+page.onPendingEvent = function(info, evt) {
+    console.log('Pending event ' + info['type'] + ' sending ' + evt);
+    evt.fire();
+};
 //page.open('https://news.ycombinator.com/', function (status) {
         //console.log('Page loaded ' + status);
         //phantom.exit();

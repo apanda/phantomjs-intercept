@@ -268,6 +268,12 @@ void EventTarget::fireEventListeners(Event* event, EventTargetData* d, EventList
         toDOMWindow()->page()->chrome().client()->fireEvent(event, d, &entry, this)) {
         fireEventListenersInternal(event, d, entry);
     }
+    else {
+        // Keep the event alive after return from here
+        // Making two pointers out of one, so manually up the ref (one for ev, one for m_eventMap).
+        event->ref();
+        m_pendingEvents.add(event);
+    }
 }
 
 const EventListenerVector& EventTarget::getEventListeners(const AtomicString& eventType)
@@ -304,7 +310,16 @@ void EventTarget::removeAllEventListeners()
 
 void EventTarget::deliverEvent(EventTarget* target , Event* ev, EventTargetData* d, void* v)
 {
-    target->fireEventListenersInternal(ev, d, *(EventListenerVector*)v);
+    // Don't call this function without a handle, that is crazy.
+    ASSERT(target->m_pendingEvents.contains(ev));
+    if (target->m_pendingEvents.contains(ev)) {
+        target->fireEventListenersInternal(ev, d, *(EventListenerVector*)v);
+        // Once consumed, we don't want people to use the event repeatedly.
+        target->m_pendingEvents.remove(ev);
+        // Let us not use more memory than necessary
+        ev->deref();
+    }
+    // Once fired, get rid of the event.
 }
 
 } // namespace WebCore

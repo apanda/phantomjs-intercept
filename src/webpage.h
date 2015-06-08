@@ -47,6 +47,8 @@ class Phantom;
 namespace WebCore {
     class DOMTimer;
     class EventTargetData;
+    class Event;
+    class EventTarget;
 }
 
 class JsTimerObject : public QObject
@@ -57,6 +59,27 @@ class JsTimerObject : public QObject
         Q_INVOKABLE void fire();
     private:
         WebCore::DOMTimer* m_timer;
+        CustomPage* m_page;
+};
+
+class JsEventObject : public QObject
+{
+    Q_OBJECT
+    public:
+        JsEventObject(QString type, 
+                      WebCore::Event* _event, 
+                      WebCore::EventTargetData* _d, 
+                      void* _entry,
+                      WebCore::EventTarget* _target,
+                      CustomPage* page,
+                      QObject* parent = 0);
+        Q_INVOKABLE void fire();
+        QString m_type;
+    private:
+        WebCore::Event* m_event;
+        WebCore::EventTargetData* m_d; 
+        void* m_entry;
+        WebCore::EventTarget* m_target;
         CustomPage* m_page;
 };
 
@@ -518,6 +541,7 @@ signals:
     void closing(QObject *page);
     void repaintRequested(const int x, const int y, const int width, const int height);
     void timerSet(const QVariant& timerData, QObject* timerRequest);
+    void eventPending(const QVariant& eventData, QObject* event);
 
 private slots:
     void finish(bool ok);
@@ -525,6 +549,8 @@ private slots:
     void updateLoadingProgress(int progress);
     void handleRepaintRequested(const QRect &dirtyRect);
     void handleSetTimer(WebCore::DOMTimer* timer, int interval, bool singleShot);
+    //void handleSignalEvent(const std::string& type, JsEventObject* ev);
+    void handleSigEv(JsEventObject*);
 
 private:
     QImage renderImage();

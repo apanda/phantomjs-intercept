@@ -120,6 +120,9 @@ public:
 
 signals:
     void signalTimer(WebCore::DOMTimer* timer, int interval, bool singleShot);
+    //void signalEvent(std::string type, JsEventObject* ev);
+    void signalEvent(JsEventObject* ev);
+
 public slots:
     bool shouldInterruptJavaScript() {
         m_webPage->javascriptInterrupt();
@@ -147,12 +150,13 @@ protected:
                void* entry,
                WebCore::EventTarget* target) {
         std::stringstream buffer;
-        buffer << "Event fired " << type;
         Terminal::instance()->cout(buffer.str().c_str());
-        deliverEvent(event, 
-                     d, 
-                     entry,
-                     target);
+        //deliverEvent(event, 
+                     //d, 
+                     //entry,
+                     //target);
+        JsEventObject* jsObj = new JsEventObject(QString(type.c_str()), event, d, entry, target, this, m_webPage);
+        emit signalEvent(jsObj);
         return false;
     }
 
@@ -393,13 +397,15 @@ WebPage::WebPage(QObject *parent, const QUrl &baseUrl)
     connect(m_mainFrame, SIGNAL(javaScriptWindowObjectCleared()), this, SLOT(setupFrame()));
     connect(m_mainFrame, SIGNAL(javaScriptWindowObjectCleared()), SIGNAL(initialized()));
     connect(m_mainFrame, SIGNAL(urlChanged(QUrl)), SIGNAL(urlChanged(QUrl)));
+    connect(m_customWebPage, SIGNAL(signalEvent(JsEventObject*)), this, SLOT(handleSigEv(JsEventObject*)), 
+            Qt::QueuedConnection);
     connect(m_customWebPage, SIGNAL(loadStarted()), SIGNAL(loadStarted()), Qt::QueuedConnection);
     connect(m_customWebPage, SIGNAL(loadFinished(bool)), SLOT(finish(bool)), Qt::QueuedConnection);
     connect(m_customWebPage, SIGNAL(windowCloseRequested()), this, SLOT(close()), Qt::QueuedConnection);
     connect(m_customWebPage, SIGNAL(loadProgress(int)), this, SLOT(updateLoadingProgress(int)));
     connect(m_customWebPage, SIGNAL(repaintRequested(QRect)), this, SLOT(handleRepaintRequested(QRect)), Qt::QueuedConnection);
-    connect(m_customWebPage, SIGNAL(signalTimer(WebCore::DOMTimer*, int, bool)), this, SLOT(handleSetTimer(WebCore::DOMTimer*, int, bool)), Qt::QueuedConnection);
-
+    connect(m_customWebPage, SIGNAL(signalTimer(WebCore::DOMTimer*, int, bool)), this, 
+            SLOT(handleSetTimer(WebCore::DOMTimer*, int, bool)), Qt::QueuedConnection);
 
     // Start with transparent background.
     QPalette palette = m_customWebPage->palette();
@@ -1681,11 +1687,40 @@ void WebPage::handleSetTimer(WebCore::DOMTimer* timer, int interval, bool single
     emit timerSet(timerInfo, jsTimer);
 }
 
+void WebPage::handleSigEv(JsEventObject* ev)
+{
+    QVariantMap eventInfo;
+    eventInfo["type"] = QString(ev->m_type);
+    ev->setParent(this);
+    emit eventPending(eventInfo, ev); 
+}
+
 JsTimerObject::JsTimerObject(WebCore::DOMTimer* timer, CustomPage* page, QObject* parent) 
     : QObject(parent)
     , m_timer(timer)
     , m_page (page) 
 {
+}
+JsEventObject::JsEventObject(QString type, 
+              WebCore::Event* event, 
+              WebCore::EventTargetData* d, 
+              void* entry,
+              WebCore::EventTarget* target,
+              CustomPage* page,
+              QObject* parent) 
+    : QObject(parent)
+    , m_type(type)
+    , m_event(event)
+    , m_d(d)
+    , m_entry(entry)
+    , m_target(target)
+    , m_page(page)
+{
+}
+
+void JsEventObject::fire()
+{
+    m_page->deliverEvent(m_event, m_d, m_entry, m_target);
 }
 
 void JsTimerObject::fire() {
