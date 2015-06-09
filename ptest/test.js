@@ -39,6 +39,7 @@ page.onTimerSet = function(info, timer) {
         console.log('Recording timer being set, interval ' + info['interval'] + ' single shot ' + info['singleShot']);
         events.push({'type': 'timer', 'obj': evt});
     } else {
+        console.log('\n\n\n');
         eventRunning = allocCookie();
         console.log("Running timer callback with cookie " + eventRunning);
         timer.fire(eventRunning);
@@ -47,21 +48,25 @@ page.onTimerSet = function(info, timer) {
 
 page.onPendingEvent = function(info, evt) {
     if (eventRunning) {
-        console.log('Recording event ' + info['EventType'] + ' sending ');
+        console.log('Recording event ' + JSON.stringify(info));
         events.push({'info': info, 'obj': evt});
     } else {
+        console.log('\n\n\n');
         eventRunning = allocCookie();
-        console.log("Running event " + JSON.stringify(info) + " with cookie " + eventRunning);
+        console.log("Running event " + JSON.stringify(info) + " with cookie " + eventRunning  + ' dispatching ');
         evt.fire(eventRunning);
     }
 };
 
 page.onQuiesced = function(cookie) {
     console.log('Quiesced ' + cookie);
+    console.log('\n\n\n');
+    console.log('Pending ' + JSON.stringify(events));
     var next = events.shift();
+    console.log('Next ' + JSON.stringify(next));
     if (next) {
         eventRunning = allocCookie();
-        console.log('Dispatching queued ' + next['type'] + ' with cookie ' + eventRunning);
+        console.log('Dispatching queued ' + JSON.stringify(next['info']) + ' with cookie ' + eventRunning);
         next['obj'].fire(eventRunning);
     } else {
         console.log("Everything is quiesced");

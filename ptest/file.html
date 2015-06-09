@@ -1,10 +1,11 @@
 <html>
     <head>
         <script>
-            //alerted = false;
-            //window.onload = function() { setTimeout(function(){if (alerted) {throw "Alread alerted";} }, 2);}
+            alerted = false;
+            window.onload = function() { setTimeout(function(){if (alerted) {throw "Alread alerted";} }, 2);}
 
-            //setTimeout(function(){ alerted = true; }, 3);
+            setTimeout(function(){ setTimeout(function(){alert("Wooho");}, 30); }, 3);
+
             var xhr = new XMLHttpRequest();
             xhr.onload = function() { alert("Load"); }
             xhr.open('GET', 'foo.txt', true);

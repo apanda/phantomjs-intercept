@@ -1697,6 +1697,7 @@ void WebPage::handleSigEv(JsEventObject* ev)
     eventInfo["NodeInterfaceName"] = ev->m_ifname;
     eventInfo["NodeName"] = ev->m_nodeName;
     eventInfo["NodeType"] = ev->m_nodeType;
+    eventInfo["EventSpecificInfo"] = ev->m_additionalInfo;
     ev->setParent(this);
     emit eventPending(eventInfo, ev); 
 }
@@ -1730,6 +1731,9 @@ JsEventObject::JsEventObject(EventInformation* info,
     m_ifname = QString(info->ifname);
     if (info->nodeName) {
         m_nodeName = QString(info->nodeName);
+    }
+    if (info->additionalInfo) {
+        m_additionalInfo = QString(info->additionalInfo);
     }
     m_nodeType = info->nodeType;
     connect(this, SIGNAL(fireSignal(const QString&)), this, SLOT(handleFireSignal(const QString&)), Qt::QueuedConnection);

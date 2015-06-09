@@ -49,6 +49,7 @@ struct EventInformation {
     const char* type;
     const char* ifname;
     const char* nodeName;
+    const char* additionalInfo;
     int   nodeType;
 };
 

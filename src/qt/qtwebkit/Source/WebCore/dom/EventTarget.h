@@ -111,6 +111,8 @@ namespace WebCore {
         virtual const AtomicString& interfaceName() const = 0;
         virtual ScriptExecutionContext* scriptExecutionContext() const = 0;
 
+        virtual const String* additionalInformation() {return NULL;}
+
         virtual Node* toNode();
         virtual DOMWindow* toDOMWindow();
 

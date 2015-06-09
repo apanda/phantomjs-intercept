@@ -368,6 +368,11 @@ bool ChromeClientQt::fireEvent(Event* event,
         info.nodeName = 0;
         info.nodeType = 0;
     }
+    if (target->additionalInformation()) {
+        info.additionalInfo = target->additionalInformation()->ascii().data();
+    } else {
+        info.additionalInfo = 0;
+    }
     return m_webPage->fireEvent(&info, event, d, entry, target);
 }
 

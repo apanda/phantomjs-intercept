@@ -71,6 +71,7 @@ struct EventInformation {
     const char* type;
     const char* ifname;
     const char* nodeName;
+    const char* additionalInfo;
     int   nodeType;
 };
 
@@ -89,6 +90,7 @@ class JsEventObject : public QObject
         QString m_type;
         QString m_ifname;
         QString m_nodeName;
+        QString m_additionalInfo;
         int m_nodeType;
     signals:
         void fireSignal(const QString& cookie);

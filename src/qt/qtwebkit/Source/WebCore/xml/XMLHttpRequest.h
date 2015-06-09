@@ -80,6 +80,8 @@ public:
 
     virtual const AtomicString& interfaceName() const;
     virtual ScriptExecutionContext* scriptExecutionContext() const;
+    
+    virtual const String* additionalInformation() {return &m_url.string();}
 
     const KURL& url() const { return m_url; }
     String statusText(ExceptionCode&) const;
