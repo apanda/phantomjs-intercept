@@ -228,6 +228,7 @@ typedef unsigned char DocumentClassFlags;
 
 class Document : public ContainerNode, public TreeScope, public ScriptExecutionContext {
 public:
+    virtual Document* toDocument() { return this; }
     static PassRefPtr<Document> create(Frame* frame, const KURL& url)
     {
         return adoptRef(new Document(frame, url));

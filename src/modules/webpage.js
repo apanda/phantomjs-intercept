@@ -276,6 +276,8 @@ function decorateNewPage(opts, page) {
 
     definePageSignalHandler(page, handlers, "onPendingEvent", "eventPending");
 
+    definePageSignalHandler(page, handlers, "onQuiesced", "quiesced"); 
+
     // Private callback for "page.open()"
     definePageSignalHandler(page, handlers, "_onPageOpenFinished", "loadFinished");
 

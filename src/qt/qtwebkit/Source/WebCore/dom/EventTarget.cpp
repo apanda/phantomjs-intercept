@@ -264,8 +264,9 @@ void EventTarget::fireEventListenersInternal(Event* event, EventTargetData* d, E
 void EventTarget::fireEventListeners(Event* event, EventTargetData* d, EventListenerVector& entry)
 {
     RefPtr<EventTarget> protect = this;
-    if (!toDOMWindow() ||
-        toDOMWindow()->page()->chrome().client()->fireEvent(event, d, &entry, this)) {
+    ScriptExecutionContext* context = scriptExecutionContext();
+    if (!context->isDocument() ||
+        context->toDocument()->page()->chrome().client()->fireEvent(event, d, &entry, this)) {
         fireEventListenersInternal(event, d, entry);
     }
     else {

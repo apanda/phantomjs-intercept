@@ -56,7 +56,11 @@ class JsTimerObject : public QObject
     Q_OBJECT
     public:
         JsTimerObject(WebCore::DOMTimer* timer, CustomPage* page, QObject* parent = 0);
-        Q_INVOKABLE void fire();
+        Q_INVOKABLE void fire(const QString& cookie);
+    signals:
+        void fireSignal(const QString& cookie);
+    private slots:
+        void handleFireSignal(const QString& cookie);
     private:
         WebCore::DOMTimer* m_timer;
         CustomPage* m_page;
@@ -73,8 +77,12 @@ class JsEventObject : public QObject
                       WebCore::EventTarget* _target,
                       CustomPage* page,
                       QObject* parent = 0);
-        Q_INVOKABLE void fire();
+        Q_INVOKABLE void fire(const QString& cookie);
         QString m_type;
+    signals:
+        void fireSignal(const QString& cookie);
+    private slots:
+        void handleFireSignal(const QString& cookie);
     private:
         WebCore::Event* m_event;
         WebCore::EventTargetData* m_d; 
@@ -542,6 +550,7 @@ signals:
     void repaintRequested(const int x, const int y, const int width, const int height);
     void timerSet(const QVariant& timerData, QObject* timerRequest);
     void eventPending(const QVariant& eventData, QObject* event);
+    void quiesced(const QString&);
 
 private slots:
     void finish(bool ok);
@@ -549,8 +558,8 @@ private slots:
     void updateLoadingProgress(int progress);
     void handleRepaintRequested(const QRect &dirtyRect);
     void handleSetTimer(WebCore::DOMTimer* timer, int interval, bool singleShot);
-    //void handleSignalEvent(const std::string& type, JsEventObject* ev);
     void handleSigEv(JsEventObject*);
+    void handleHandlerDone(const QString&);
 
 private:
     QImage renderImage();

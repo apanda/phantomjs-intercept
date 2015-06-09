@@ -123,6 +123,8 @@ signals:
     //void signalEvent(std::string type, JsEventObject* ev);
     void signalEvent(JsEventObject* ev);
 
+    void signalHandlerDone(const QString&);
+
 public slots:
     bool shouldInterruptJavaScript() {
         m_webPage->javascriptInterrupt();
@@ -149,8 +151,6 @@ protected:
                WebCore::EventTargetData* d, 
                void* entry,
                WebCore::EventTarget* target) {
-        std::stringstream buffer;
-        Terminal::instance()->cout(buffer.str().c_str());
         //deliverEvent(event, 
                      //d, 
                      //entry,
@@ -406,6 +406,8 @@ WebPage::WebPage(QObject *parent, const QUrl &baseUrl)
     connect(m_customWebPage, SIGNAL(repaintRequested(QRect)), this, SLOT(handleRepaintRequested(QRect)), Qt::QueuedConnection);
     connect(m_customWebPage, SIGNAL(signalTimer(WebCore::DOMTimer*, int, bool)), this, 
             SLOT(handleSetTimer(WebCore::DOMTimer*, int, bool)), Qt::QueuedConnection);
+    connect(m_customWebPage, SIGNAL(signalHandlerDone(const QString&)), this,
+            SLOT(handleHandlerDone(const QString&)), Qt::QueuedConnection);
 
     // Start with transparent background.
     QPalette palette = m_customWebPage->palette();
@@ -1695,11 +1697,16 @@ void WebPage::handleSigEv(JsEventObject* ev)
     emit eventPending(eventInfo, ev); 
 }
 
+void WebPage::handleHandlerDone(const QString& cookie) {
+    emit quiesced(cookie); 
+}
+
 JsTimerObject::JsTimerObject(WebCore::DOMTimer* timer, CustomPage* page, QObject* parent) 
     : QObject(parent)
     , m_timer(timer)
     , m_page (page) 
 {
+    connect(this, SIGNAL(fireSignal(const QString&)), this, SLOT(handleFireSignal(const QString&)), Qt::QueuedConnection);
 }
 JsEventObject::JsEventObject(QString type, 
               WebCore::Event* event, 
@@ -1716,15 +1723,26 @@ JsEventObject::JsEventObject(QString type,
     , m_target(target)
     , m_page(page)
 {
+    connect(this, SIGNAL(fireSignal(const QString&)), this, SLOT(handleFireSignal(const QString&)), Qt::QueuedConnection);
 }
 
-void JsEventObject::fire()
-{
+void JsEventObject::fire(const QString &cookie) {
+
+    emit fireSignal(cookie);
+}
+
+void JsTimerObject::fire(const QString &cookie) {
+    emit fireSignal(cookie);
+}
+
+void JsEventObject::handleFireSignal(const QString& cookie) {
     m_page->deliverEvent(m_event, m_d, m_entry, m_target);
+    emit m_page->signalHandlerDone(cookie);
 }
 
-void JsTimerObject::fire() {
+void JsTimerObject::handleFireSignal(const QString& cookie) {
     m_page->deliverTimer(m_timer);
+    emit m_page->signalHandlerDone(cookie);
 }
 
 #include "webpage.moc"

@@ -50,6 +50,7 @@ class EventQueue;
 class EventTarget;
 class MessagePort;
 class ScriptCallStack;
+class Document;
 
 typedef JSC::ExecState ScriptState;
 
@@ -63,6 +64,7 @@ public:
     virtual ~ScriptExecutionContext();
 
     virtual bool isDocument() const { return false; }
+    virtual Document* toDocument() { return NULL; }
     virtual bool isWorkerGlobalScope() const { return false; }
 
     virtual bool isContextThread() const { return true; }
