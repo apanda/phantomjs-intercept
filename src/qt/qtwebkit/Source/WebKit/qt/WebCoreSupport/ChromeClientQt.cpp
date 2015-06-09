@@ -358,7 +358,17 @@ bool ChromeClientQt::fireEvent(Event* event,
                                EventListenerVector* entry,
                                EventTarget* target)
 {
-    return m_webPage->fireEvent(std::string(event->type().string().ascii().data()), event, d, entry, target);
+    EventInformation info;
+    info.type = event->type().string().ascii().data();
+    info.ifname = target->interfaceName().string().ascii().data();
+    if (target->toNode()) {
+        info.nodeName = target->toNode()->nodeName().ascii().data();
+        info.nodeType = target->toNode()->nodeType();
+    } else {
+        info.nodeName = 0;
+        info.nodeType = 0;
+    }
+    return m_webPage->fireEvent(&info, event, d, entry, target);
 }
 
 bool ChromeClientQt::runJavaScriptConfirm(Frame* f, const String& msg)

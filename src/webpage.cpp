@@ -82,6 +82,7 @@
 #define STDOUT_FILENAME "/dev/stdout"
 #define STDERR_FILENAME "/dev/stderr"
 
+
 namespace WebCore {
     class DOMTimer;
 }
@@ -146,7 +147,7 @@ protected:
         return false;
     }
 
-    bool fireEvent(const std::string& type, 
+    bool fireEvent(EventInformation* info, 
                WebCore::Event* event, 
                WebCore::EventTargetData* d, 
                void* entry,
@@ -155,7 +156,7 @@ protected:
                      //d, 
                      //entry,
                      //target);
-        JsEventObject* jsObj = new JsEventObject(QString(type.c_str()), event, d, entry, target, this, m_webPage);
+        JsEventObject* jsObj = new JsEventObject(info, event, d, entry, target, this, m_webPage);
         emit signalEvent(jsObj);
         return false;
     }
@@ -1692,7 +1693,10 @@ void WebPage::handleSetTimer(WebCore::DOMTimer* timer, int interval, bool single
 void WebPage::handleSigEv(JsEventObject* ev)
 {
     QVariantMap eventInfo;
-    eventInfo["type"] = QString(ev->m_type);
+    eventInfo["EventType"] = ev->m_type;
+    eventInfo["NodeInterfaceName"] = ev->m_ifname;
+    eventInfo["NodeName"] = ev->m_nodeName;
+    eventInfo["NodeType"] = ev->m_nodeType;
     ev->setParent(this);
     emit eventPending(eventInfo, ev); 
 }
@@ -1708,7 +1712,7 @@ JsTimerObject::JsTimerObject(WebCore::DOMTimer* timer, CustomPage* page, QObject
 {
     connect(this, SIGNAL(fireSignal(const QString&)), this, SLOT(handleFireSignal(const QString&)), Qt::QueuedConnection);
 }
-JsEventObject::JsEventObject(QString type, 
+JsEventObject::JsEventObject(EventInformation* info, 
               WebCore::Event* event, 
               WebCore::EventTargetData* d, 
               void* entry,
@@ -1716,13 +1720,18 @@ JsEventObject::JsEventObject(QString type,
               CustomPage* page,
               QObject* parent) 
     : QObject(parent)
-    , m_type(type)
     , m_event(event)
     , m_d(d)
     , m_entry(entry)
     , m_target(target)
     , m_page(page)
 {
+    m_type = QString(info->type);
+    m_ifname = QString(info->ifname);
+    if (info->nodeName) {
+        m_nodeName = QString(info->nodeName);
+    }
+    m_nodeType = info->nodeType;
     connect(this, SIGNAL(fireSignal(const QString&)), this, SLOT(handleFireSignal(const QString&)), Qt::QueuedConnection);
 }
 

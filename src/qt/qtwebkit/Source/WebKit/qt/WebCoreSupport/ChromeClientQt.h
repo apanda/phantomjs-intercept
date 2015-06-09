@@ -45,6 +45,13 @@ class QWebPage;
 class QWebPageAdapter;
 class QWebFullScreenVideoHandler;
 
+struct EventInformation {
+    const char* type;
+    const char* ifname;
+    const char* nodeName;
+    int   nodeType;
+};
+
 namespace WebCore {
 
 class FileChooser;

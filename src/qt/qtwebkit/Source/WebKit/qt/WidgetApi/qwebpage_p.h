@@ -64,6 +64,7 @@ class QtPluginWidgetAdapter;
 class QWebInspector;
 class QWebFrameAdapter;
 class UndoStepQt;
+struct EventInformation;
 
 class QtViewportAttributesPrivate : public QSharedData {
 public:
@@ -101,7 +102,7 @@ public:
     virtual void applicationCacheQuotaExceeded(QWebSecurityOrigin*, quint64 defaultOriginQuota, quint64 totalSpaceNeeded) OVERRIDE;
     virtual void setToolTip(const QString&) OVERRIDE;
     virtual bool setTimer(WebCore::DOMTimer*, int, bool) OVERRIDE;
-    virtual bool fireEvent(const std::string& type, 
+    virtual bool fireEvent(EventInformation* info, 
                            WebCore::Event* event, 
                            WebCore::EventTargetData* d, 
                            void* entry,

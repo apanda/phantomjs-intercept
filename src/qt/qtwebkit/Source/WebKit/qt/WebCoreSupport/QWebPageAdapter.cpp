@@ -1556,7 +1556,7 @@ bool QWebPageAdapter::setTimer(WebCore::DOMTimer* timer __attribute__((unused)),
 }
 
 
-bool QWebPageAdapter::fireEvent(const std::string& type, 
+bool QWebPageAdapter::fireEvent(EventInformation* info, 
                            WebCore::Event* event, 
                            WebCore::EventTargetData* d, 
                            void* entry,

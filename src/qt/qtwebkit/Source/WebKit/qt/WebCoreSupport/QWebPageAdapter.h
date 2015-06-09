@@ -59,6 +59,7 @@ class EventTarget;
 class EventTargetData;
 }
 
+struct EventInformation;
 class QtPluginWidgetAdapter;
 class QWebFrameAdapter;
 class QWebHistoryItem;
@@ -168,7 +169,7 @@ public:
 
     void deliverTimer(WebCore::DOMTimer*);
     virtual bool setTimer(WebCore::DOMTimer*, int, bool);
-    virtual bool fireEvent(const std::string& type, 
+    virtual bool fireEvent(EventInformation* info, 
                            WebCore::Event* event, 
                            WebCore::EventTargetData* d, 
                            void* entry,

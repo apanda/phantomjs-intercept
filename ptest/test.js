@@ -47,11 +47,11 @@ page.onTimerSet = function(info, timer) {
 
 page.onPendingEvent = function(info, evt) {
     if (eventRunning) {
-        console.log('Recording event ' + info['type'] + ' sending ');
-        events.push({'type': info['type'], 'obj': evt});
+        console.log('Recording event ' + info['EventType'] + ' sending ');
+        events.push({'info': info, 'obj': evt});
     } else {
         eventRunning = allocCookie();
-        console.log("Running event callback with cookie " + eventRunning);
+        console.log("Running event " + JSON.stringify(info) + " with cookie " + eventRunning);
         evt.fire(eventRunning);
     }
 };

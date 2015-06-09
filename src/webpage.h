@@ -66,11 +66,19 @@ class JsTimerObject : public QObject
         CustomPage* m_page;
 };
 
+// Keep in sync with ChromeClientQt.h or else horrible things will happen
+struct EventInformation {
+    const char* type;
+    const char* ifname;
+    const char* nodeName;
+    int   nodeType;
+};
+
 class JsEventObject : public QObject
 {
     Q_OBJECT
     public:
-        JsEventObject(QString type, 
+        JsEventObject(EventInformation* information, 
                       WebCore::Event* _event, 
                       WebCore::EventTargetData* _d, 
                       void* _entry,
@@ -79,6 +87,9 @@ class JsEventObject : public QObject
                       QObject* parent = 0);
         Q_INVOKABLE void fire(const QString& cookie);
         QString m_type;
+        QString m_ifname;
+        QString m_nodeName;
+        int m_nodeType;
     signals:
         void fireSignal(const QString& cookie);
     private slots:

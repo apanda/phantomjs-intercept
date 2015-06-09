@@ -87,6 +87,7 @@
 #endif
 
 using namespace WebCore;
+struct EventInfomation;
 
 // Lookup table mapping QWebPage::WebActions to the associated Editor commands
 static const char* editorCommandWebActions[] =
@@ -276,16 +277,16 @@ bool QWebPagePrivate::setTimer(WebCore::DOMTimer* timer, int interval, bool sing
     return q->setTimer(timer, interval, singleShot);
 }
 
-bool QWebPagePrivate::fireEvent(const std::string& type, 
+bool QWebPagePrivate::fireEvent(EventInformation* info, 
                WebCore::Event* event, 
                EventTargetData* d, 
                void* entry,
                WebCore::EventTarget* target)
 {
-    return q->fireEvent(type, event, d, entry, target);
+    return q->fireEvent(info, event, d, entry, target);
 }
 
-bool QWebPage::fireEvent(const std::string& type, 
+bool QWebPage::fireEvent(EventInformation* info, 
                WebCore::Event* event, 
                WebCore::EventTargetData* d, 
                void* entry,

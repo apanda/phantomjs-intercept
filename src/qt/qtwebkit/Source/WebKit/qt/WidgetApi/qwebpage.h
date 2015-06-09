@@ -52,6 +52,7 @@ class QWebPagePrivate;
 class QWebPluginFactory;
 class QWebSecurityOrigin;
 class QtViewportAttributesPrivate;
+struct EventInformation;
 
 namespace WebCore {
     class ChromeClientQt;
@@ -451,7 +452,7 @@ protected:
     virtual QString userAgentForUrl(const QUrl& url) const;
 
     virtual bool setTimer(WebCore::DOMTimer*, int, bool);
-    virtual bool fireEvent(const std::string& type, 
+    virtual bool fireEvent(EventInformation* info, 
                            WebCore::Event* event, 
                            WebCore::EventTargetData* d, 
                            void* entry,
