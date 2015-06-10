@@ -1,6 +1,11 @@
 (function() {
     var sys = require('system');
     var page = require('webpage').create();
+    page.viewportSize = {
+        width: 1920,
+        height: 1080
+    };
+
     var events = new Array();
     var eventRunning = 'cookie0';
     var eventCount = 1;
@@ -8,6 +13,7 @@
     var waitingForResources = false; 
     var quiesced = false;
     var resourcesRequested = Object();
+    var playedKeys = 0;
     function allocCookie() {
         var cookie = "cookie"+eventCount;
         eventCount++;
@@ -148,8 +154,29 @@
                 console.log('Done\n\n\n');
                 // Notoriously, PostMessages can show up much later.
                 eventRunning = false;
-                //
-                //page.sendEvent('keypress', page.event.key['Left']);
+                if (playedKeys === 0) {
+                    page.render('before_key.png');
+                    playedKeys = 1;
+                } else if (playedKeys === 1) {
+                    page.sendEvent('keypress', page.event.key['Right']);
+                    playedKeys = 2;
+                    page.render('key1.png');
+                } else if (playedKeys === 2) {
+                    playedKeys = 3;
+                    page.sendEvent('keypress', page.event.key['Down']);
+                    page.render('key2.png');
+                } else if (playedKeys === 3) {
+                    page.render('key3.png');
+                    playedKeys++;
+                    //phantom.exit()
+                } else {
+                    playedKeys++;
+                    console.log('playedKeys = ' + playedKeys);
+                    if (playedKeys >= 5) {
+                        page.render('keys_end.png');
+                        phantom.exit();
+                    }
+                }
             }
         } catch(err) {
             console.log('Dispatch error ' + err.message);
@@ -177,6 +204,6 @@
     console.log('Will open URL ' + url);
     page.open(url, function() {
             //page.sendEvent('keypress', page.event.key['Right']);
-            page.render('file.png');
+            //page.render('file.png');
             });
 })();

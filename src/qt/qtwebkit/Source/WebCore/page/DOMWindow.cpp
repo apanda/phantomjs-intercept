@@ -817,6 +817,8 @@ Storage* DOMWindow::localStorage(ExceptionCode& ec) const
     }
 
     m_localStorage = Storage::create(m_frame, storageArea.release());
+    ExceptionCode ec2;
+    m_localStorage->clear(ec2);
     return m_localStorage.get();
 }
 

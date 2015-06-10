@@ -148,7 +148,28 @@ namespace WebCore {
         virtual EventTargetData* ensureEventTargetData() = 0;
 
     private:
-        typedef HashSet<Event*> EventSet;
+        inline void incrementEventReference (Event* ev) {
+            if (m_pendingEvents.contains(ev)) {
+                size_t delivered = m_pendingEvents.get(ev) + 1;
+                m_pendingEvents.set(ev, delivered);
+            } else {
+                m_pendingEvents.add(ev, 1);
+            }
+        }
+
+        inline bool decrementEventReference (Event* ev) {
+            size_t delivered = m_pendingEvents.get(ev) - 1;
+            if (delivered == 0) {
+                // Once consumed, we don't want people to use the event repeatedly.
+                m_pendingEvents.remove(ev);
+                return true;
+            } else {
+                m_pendingEvents.set(ev, delivered);
+                return false;
+            }
+        }
+
+        typedef HashMap<Event*, size_t> EventSet;
         EventSet m_pendingEvents;
         virtual void refEventTarget() = 0;
         virtual void derefEventTarget() = 0;
