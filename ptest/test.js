@@ -14,6 +14,7 @@
     var quiesced = false;
     var resourcesRequested = Object();
     var playedKeys = 0;
+
     function allocCookie() {
         var cookie = "cookie"+eventCount;
         eventCount++;
@@ -123,9 +124,31 @@
         }
     };
 
+    var externalEventsToPlay = [
+        function (cookie) {eventRunning = false;}, // First wait for post meessage
+        function (cookie) {console.log('EXTERNAL Going right '); 
+                    page.sendEventCookie(cookie, 'keypress', page.event.key['Right']);
+        },
+        function (cookie) {console.log('EXTERNAL Going down ');
+                    page.sendEventCookie(eventRunning, 'keypress', page.event.key['Down']);
+        },
+    ];
+
+    var runNextExternalEvent = function() {
+        var next = externalEventsToPlay.shift();
+        if (next) {
+            eventRunning = allocCookie();
+            next(eventRunning);
+        } else {
+            console.log('Nothing to do');
+            console.log('Should not see any message after');
+            //phantom.exit();
+        }
+    };
+
     page.onQuiesced = function(cookie) {
         try {
-            if (cookie !== eventRunning) {
+            if (eventRunning && cookie !== eventRunning) {
                 // Just let it go
                 return;
             }
@@ -154,29 +177,7 @@
                 console.log('Done\n\n\n');
                 // Notoriously, PostMessages can show up much later.
                 eventRunning = false;
-                if (playedKeys === 0) {
-                    page.render('before_key.png');
-                    playedKeys = 1;
-                } else if (playedKeys === 1) {
-                    page.sendEvent('keypress', page.event.key['Right']);
-                    playedKeys = 2;
-                    page.render('key1.png');
-                } else if (playedKeys === 2) {
-                    playedKeys = 3;
-                    page.sendEvent('keypress', page.event.key['Down']);
-                    page.render('key2.png');
-                } else if (playedKeys === 3) {
-                    page.render('key3.png');
-                    playedKeys++;
-                    //phantom.exit()
-                } else {
-                    playedKeys++;
-                    console.log('playedKeys = ' + playedKeys);
-                    if (playedKeys >= 5) {
-                        page.render('keys_end.png');
-                        phantom.exit();
-                    }
-                }
+                runNextExternalEvent();
             }
         } catch(err) {
             console.log('Dispatch error ' + err.message);

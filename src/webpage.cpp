@@ -945,6 +945,12 @@ void WebPage::close() {
     deleteLater();
 }
 
+bool WebPage::renderCookie(const QString& cookie, const QString &fileName, const QVariantMap &option)
+{
+    render(fileName, option);
+    emit quiesced(cookie); 
+}
+
 bool WebPage::render(const QString &fileName, const QVariantMap &option)
 {
     if (m_mainFrame->contentsSize().isEmpty())
@@ -1389,6 +1395,12 @@ QObject *WebPage::_getJsInterruptCallback()
     return m_callbacks->getJsInterruptCallback();
 }
 
+void WebPage::sendEventCookie(
+    const QString& cookie, const QString &type, const QVariant &arg1, const QVariant &arg2, const QString &mouseButton, const QVariant &modifierArg)
+{
+    sendEvent(type, arg1, arg2, mouseButton, modifierArg);
+    emit quiesced(cookie); 
+}
 void WebPage::sendEvent(const QString &type, const QVariant &arg1, const QVariant &arg2, const QString &mouseButton, const QVariant &modifierArg)
 {
     Qt::KeyboardModifiers keyboardModifiers(modifierArg.toInt());

@@ -318,6 +318,7 @@ public slots:
     void close();
 
     QVariant evaluateJavaScript(const QString &code);
+    bool renderCookie(const QString& cookie, const QString &fileName, const QVariantMap &map = QVariantMap());
     bool render(const QString &fileName, const QVariantMap &map = QVariantMap());
     /**
      * Render the page as base-64 encoded string.
@@ -341,6 +342,8 @@ public slots:
     QObject *_getJsInterruptCallback();
     void _uploadFile(const QString &selector, const QStringList &fileNames);
     void sendEvent(const QString &type, const QVariant &arg1 = QVariant(), const QVariant &arg2 = QVariant(), const QString &mouseButton = QString(), const QVariant &modifierArg = QVariant());
+
+    void sendEventCookie(const QString& cookie, const QString &type, const QVariant &arg1 = QVariant(), const QVariant &arg2 = QVariant(), const QString &mouseButton = QString(), const QVariant &modifierArg = QVariant());
 
     void setContent(const QString &content, const QString &baseUrl);
     /**
