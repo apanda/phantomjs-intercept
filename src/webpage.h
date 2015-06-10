@@ -92,6 +92,7 @@ class JsEventObject : public QObject
         QString m_nodeName;
         QString m_additionalInfo;
         int m_nodeType;
+        int64_t m_eventID;
     signals:
         void fireSignal(const QString& cookie);
     private slots:
@@ -112,6 +113,7 @@ class JsPostMessageObject : public QObject
         Q_INVOKABLE void fire(const QString& cookie);
         QString m_message;
         QString m_origin;
+        int64_t m_eventID;
     signals:
         void fireSignal(const QString& cookie);
     private slots:

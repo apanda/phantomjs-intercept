@@ -947,8 +947,9 @@ void WebPage::close() {
 
 bool WebPage::renderCookie(const QString& cookie, const QString &fileName, const QVariantMap &option)
 {
-    render(fileName, option);
+    bool r = render(fileName, option);
     emit quiesced(cookie); 
+    return r;
 }
 
 bool WebPage::render(const QString &fileName, const QVariantMap &option)
@@ -1709,6 +1710,7 @@ void WebPage::handleSetTimer(WebCore::DOMTimer* timer, int interval, bool single
     QVariantMap timerInfo;
     timerInfo["interval"] = interval;
     timerInfo["singleShot"] = singleShot;
+    timerInfo["EventID"] = (QVariant((qlonglong)((int64_t)timer)));
     JsTimerObject* jsTimer = new JsTimerObject(timer, m_customWebPage, this);
     emit timerSet(timerInfo, jsTimer);
 }
@@ -1721,6 +1723,7 @@ void WebPage::handleSigEv(JsEventObject* ev)
     eventInfo["NodeName"] = ev->m_nodeName;
     eventInfo["NodeType"] = ev->m_nodeType;
     eventInfo["EventSpecificInfo"] = ev->m_additionalInfo;
+    eventInfo["EventID"] = QVariant((qlonglong)ev->m_eventID);
     ev->setParent(this);
     emit eventPending(eventInfo, ev); 
 }
@@ -1734,6 +1737,7 @@ void WebPage::handlePostEvent(JsPostMessageObject* ev)
     eventInfo["NodeType"] = QString();
     eventInfo["Message"] = ev->m_message;
     eventInfo["Origin"] = ev->m_origin;
+    eventInfo["EventID"] = QVariant((qlonglong)ev->m_eventID);
     ev->setParent(this);
     emit eventPending(eventInfo, ev); 
 }
@@ -1763,6 +1767,7 @@ JsEventObject::JsEventObject(EventInformation* info,
     , m_target(target)
     , m_page(page)
 {
+    m_eventID = (int64_t)event;
     m_type = QString(info->type);
     m_ifname = QString(info->ifname);
     if (info->nodeName) {
@@ -1799,6 +1804,7 @@ JsPostMessageObject::JsPostMessageObject(void* handle, const char* message, cons
     m_handle(handle),
     m_page(page)
 {
+    m_eventID = (int64_t)handle;
     m_message = QString::fromUtf8(message);
     m_origin = QString::fromUtf8(origin);
     connect(this, SIGNAL(fireSignal(const QString&)), this, SLOT(handleFireSignal(const QString&)), Qt::QueuedConnection);

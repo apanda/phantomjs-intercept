@@ -12,8 +12,10 @@
     var hasFinishedLoading = false;
     var waitingForResources = false; 
     var quiesced = false;
+    var waitQuiesce = 1;
     var resourcesRequested = Object();
     var playedKeys = 0;
+    var eventCounts = Object();
 
     function allocCookie() {
         var cookie = "cookie"+eventCount;
@@ -99,6 +101,7 @@
             try {
                 console.log("Recording timer being set");
                 var ret = events.push({'info': info, 'obj': timer});
+                eventCounts[info["EventID"]] = (eventCounts[info["EventID"]] || 0) + 1;
                 console.log("Done recording Length is now " + ret);
             } catch(err) {
                 console.log('Dispatch error ' + err.message);
@@ -108,16 +111,21 @@
             eventRunning = allocCookie();
             console.log("Running timer callback with cookie " + eventRunning);
             timer.fire(eventRunning);
+            eventCounts[info["EventID"]] = (eventCounts[info["EventID"]] || 0) + 1;
+            waitQuiesce = eventCounts[info["EventID"]];
         }
     };
 
     page.onPendingEvent = function(info, evt) {
         if (eventRunning) {
+            eventCounts[info["EventID"]] = (eventCounts[info["EventID"]] || 0) + 1;
             console.log('Recording event ' + JSON.stringify(info));
             var ret = events.push({'info': info, 'obj': evt});
             console.log("Length is now " + ret);
         } else {
             console.log('\n\n\n');
+            eventCounts[info["EventID"]] = (eventCounts[info["EventID"]] || 0) + 1;
+            waitQuiesce = eventCounts[info["EventID"]];
             eventRunning = allocCookie();
             console.log("Running event " + JSON.stringify(info) + " with cookie " + eventRunning  + ' dispatching ');
             evt.fire(eventRunning);
@@ -129,8 +137,14 @@
         function (cookie) {console.log('EXTERNAL Going right '); 
                     page.sendEventCookie(cookie, 'keypress', page.event.key['Right']);
         },
+        function (cookie) {console.log('EXTERNAL Taking screenshot '); 
+                    page.sendEventCookie(cookie, 'keypress', page.event.key['Right']);
+        },
         function (cookie) {console.log('EXTERNAL Going down ');
                     page.sendEventCookie(eventRunning, 'keypress', page.event.key['Down']);
+        },
+        function (cookie) {console.log('EXTERNAL Going right '); 
+                    page.sendEventCookie(cookie, 'keypress', page.event.key['Right']);
         },
     ];
 
@@ -152,7 +166,11 @@
                 // Just let it go
                 return;
             }
-
+            waitQuiesce -= 1;
+            // Not yet done, continue waiting.
+            if (waitQuiesce > 0) {
+                return;
+            }
             var waiting = Object.keys(resourcesRequested);
             if (waiting.length != 0) {
                 waitingForResources = true;
@@ -169,7 +187,8 @@
             console.log('Next ' + JSON.stringify(next));
             if (next) {
                 eventRunning = allocCookie();
-                console.log('Dispatching queued ' + JSON.stringify(next['info']) + ' with cookie ' + eventRunning);
+                waitQuiesce = eventCounts[next["info"]["EventID"]] || 0;
+                console.log('Dispatching queued ' + JSON.stringify(next['info']) + ' with cookie ' + eventRunning + ' expecting to fire ' + waitQuiesce);
                 next['obj'].fire(eventRunning);
             } else {
                 console.log("Everything is quiesced");
