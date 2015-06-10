@@ -107,6 +107,7 @@ public:
                            WebCore::EventTargetData* d, 
                            void* entry,
                            WebCore::EventTarget* target) OVERRIDE;
+    virtual bool postMessage(void* handle, const char* message, const char* origin) OVERRIDE;
 #if USE(QT_MULTIMEDIA)
     virtual QWebFullScreenVideoHandler* createFullScreenVideoHandler() OVERRIDE;
 #endif

@@ -104,6 +104,23 @@ class JsEventObject : public QObject
         CustomPage* m_page;
 };
 
+class JsPostMessageObject : public QObject
+{
+    Q_OBJECT
+    public:
+        JsPostMessageObject(void* handle, const char* message, const char* origin, CustomPage* page, QObject* parent = 0);
+        Q_INVOKABLE void fire(const QString& cookie);
+        QString m_message;
+        QString m_origin;
+    signals:
+        void fireSignal(const QString& cookie);
+    private slots:
+        void handleFireSignal(const QString& cookie);
+    private:
+        void* m_handle;
+        CustomPage* m_page;
+};
+
 class WebPage : public QObject, public QWebFrame::PrintCallback
 {
     Q_OBJECT
@@ -553,7 +570,7 @@ signals:
     void resourceReceived(const QVariant &resource);
     void resourceReceiveFinished(const QVariant &resource);
     void resourceDataAvailable(const QVariant &requestData, QObject *request);
-    void resourceCanStart(const QVariant &requestData, QObject *request);
+    void resourceReadyRead(const QVariant &requestData, QObject *request);
     void resourceError(const QVariant &errorData);
     void resourceTimeout(const QVariant &errorData);
     void urlChanged(const QUrl &url);
@@ -573,6 +590,7 @@ private slots:
     void handleSetTimer(WebCore::DOMTimer* timer, int interval, bool singleShot);
     void handleSigEv(JsEventObject*);
     void handleHandlerDone(const QString&);
+    void handlePostEvent(JsPostMessageObject*);
 
 private:
     QImage renderImage();

@@ -132,6 +132,8 @@ public:
         , m_targetOrigin(targetOrigin)
         , m_stackTrace(stackTrace)
     {
+        m_message->ref();
+        
     }
 
     PassRefPtr<MessageEvent> event(ScriptExecutionContext* context)
@@ -141,7 +143,11 @@ public:
     }
     SecurityOrigin* targetOrigin() const { return m_targetOrigin.get(); }
     ScriptCallStack* stackTrace() const { return m_stackTrace.get(); }
+    
+    void fire() {fired();}
 
+    RefPtr<SerializedScriptValue> m_message;
+    String m_origin;
 private:
     virtual void fired()
     {
@@ -150,8 +156,6 @@ private:
     }
 
     RefPtr<DOMWindow> m_window;
-    RefPtr<SerializedScriptValue> m_message;
-    String m_origin;
     RefPtr<DOMWindow> m_source;
     OwnPtr<MessagePortChannelArray> m_channels;
     RefPtr<SecurityOrigin> m_targetOrigin;
@@ -862,10 +866,13 @@ void DOMWindow::postMessage(PassRefPtr<SerializedScriptValue> message, const Mes
     RefPtr<ScriptCallStack> stackTrace;
     if (InspectorInstrumentation::consoleAgentEnabled(sourceDocument))
         stackTrace = createScriptCallStack(ScriptCallStack::maxCallStackSizeToCapture, true);
-
+    //const char* messageChar = message->toString().ascii().data();
+    //const char* sourceChar = sourceOrigin.ascii().data();
     // Schedule the message.
     PostMessageTimer* timer = new PostMessageTimer(this, message, sourceOrigin, source, channels.release(), target.get(), stackTrace.release());
-    timer->startOneShot(0);
+    if (page()->chrome().client()->postMessage((void*)timer, timer->m_message->toString().ascii().data(), timer->m_origin.ascii().data())) {
+        timer->startOneShot(0);
+    }
 }
 
 void DOMWindow::postMessageTimerFired(PassOwnPtr<PostMessageTimer> t)
@@ -2045,6 +2052,11 @@ void DOMWindow::disableSuddenTermination()
 {
     if (Page* page = this->page())
         page->chrome().disableSuddenTermination();
+}
+
+void DOMWindow::firePostTimer(void* handle) 
+{
+    ((PostMessageTimer*)handle)->fire();
 }
 
 } // namespace WebCore

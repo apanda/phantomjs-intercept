@@ -117,8 +117,15 @@ unsigned ApplicationCache::removeResource(const String& url)
     
 ApplicationCacheResource* ApplicationCache::resourceForURL(const String& url)
 {
-    ASSERT(!KURL(ParsedURLString, url).hasFragmentIdentifier());
-    return m_resources.get(url);
+    KURL kurl(ParsedURLString, url);
+    if (kurl.hasFragmentIdentifier()) {
+        // @apanda, this is weird
+        kurl.removeFragmentIdentifier();
+        return m_resources.get(kurl.string());
+        //ASSERT(!kurl.hasFragmentIdentifier());
+    } else {
+        return m_resources.get(url);
+    }
 }    
 
 bool ApplicationCache::requestIsHTTPOrHTTPSGet(const ResourceRequest& request)

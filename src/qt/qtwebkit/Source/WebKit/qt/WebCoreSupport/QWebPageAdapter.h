@@ -174,6 +174,8 @@ public:
                            WebCore::EventTargetData* d, 
                            void* entry,
                            WebCore::EventTarget* target);
+
+    virtual bool postMessage(void* handle, const char* message, const char* origin);
     void deliverEvent(WebCore::Event* event, 
                       WebCore::EventTargetData* d, 
                       void* entry,
@@ -199,6 +201,8 @@ public:
     virtual QColor colorSelectionRequested(const QColor& selectedColor) = 0;
     virtual QWebSelectMethod* createSelectPopup() = 0;
     virtual QRect viewRectRelativeToWindow() = 0;
+
+    void firePostTimer (void* handle);
 
 #if USE(QT_MULTIMEDIA)
     virtual QWebFullScreenVideoHandler* createFullScreenVideoHandler() = 0;

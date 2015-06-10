@@ -87,6 +87,7 @@ class QWEBKITWIDGETS_EXPORT QWebPage : public QObject {
     Q_PROPERTY(VisibilityState visibilityState READ visibilityState WRITE setVisibilityState)
     Q_ENUMS(LinkDelegationPolicy NavigationType VisibilityState WebAction)
 public:
+    void firePostTimer (void* handle);
     enum NavigationType {
         NavigationTypeLinkClicked,
         NavigationTypeFormSubmitted,
@@ -458,6 +459,7 @@ protected:
                            void* entry,
                            WebCore::EventTarget* target);
 
+    virtual bool postMessage(void* handle, const char* message, const char* origin);
 private:
     Q_PRIVATE_SLOT(d, void _q_onLoadProgressChanged(int))
 #ifndef QT_NO_ACTION

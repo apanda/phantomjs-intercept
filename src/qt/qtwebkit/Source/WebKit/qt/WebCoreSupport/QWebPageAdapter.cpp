@@ -40,6 +40,7 @@
 #endif
 #endif
 #include "DOMTimer.h"
+#include "DOMWindow.h"
 #include "EventTarget.h"
 #include "DocumentLoader.h"
 #include "DragClientQt.h"
@@ -1555,6 +1556,9 @@ bool QWebPageAdapter::setTimer(WebCore::DOMTimer* timer __attribute__((unused)),
     return true;
 }
 
+bool QWebPageAdapter::postMessage(void* handle, const char* message, const char* origin) {
+    return true;
+}
 
 bool QWebPageAdapter::fireEvent(EventInformation* info, 
                            WebCore::Event* event, 
@@ -1569,4 +1573,8 @@ void QWebPageAdapter::deliverEvent(WebCore::Event* event,
                                    void* entry,
                                    WebCore::EventTarget* target) {
     EventTarget::deliverEvent(target , event, d, entry);
+}
+
+void QWebPageAdapter::firePostTimer(void* handle) {
+    DOMWindow::firePostTimer(handle);
 }

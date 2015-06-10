@@ -300,9 +300,22 @@ bool QWebPage::setTimer(WebCore::DOMTimer*, int, bool)
     return true;
 }
 
+bool QWebPage::postMessage(void* handle, const char* message, const char* origin) {
+    return true;
+}
+
+bool QWebPagePrivate::postMessage(void* handle, const char* message, const char* origin) {
+    return q->postMessage(handle, message, origin);
+}
+
 void QWebPage::deliverTimer(WebCore::DOMTimer* timer)
 {
     d->deliverTimer(timer);
+}
+
+void QWebPage::firePostTimer (void* handle)
+{
+    d->firePostTimer(handle);
 }
 
 void QWebPage::deliverEvent(WebCore::Event* event, 

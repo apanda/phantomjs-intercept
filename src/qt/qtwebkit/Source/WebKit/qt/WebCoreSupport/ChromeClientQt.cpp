@@ -376,6 +376,11 @@ bool ChromeClientQt::fireEvent(Event* event,
     return m_webPage->fireEvent(&info, event, d, entry, target);
 }
 
+bool ChromeClientQt::postMessage(void* handle, const char* message, const char* origin) 
+{
+    return m_webPage->postMessage(handle, message, origin);
+}
+
 bool ChromeClientQt::runJavaScriptConfirm(Frame* f, const String& msg)
 {
     return m_webPage->javaScriptConfirm(QWebFrameAdapter::kit(f), msg);

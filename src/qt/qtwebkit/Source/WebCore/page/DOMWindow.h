@@ -173,6 +173,8 @@ namespace WebCore {
         bool find(const String&, bool caseSensitive, bool backwards, bool wrap, bool wholeWord, bool searchInFrames, bool showDialog) const;
 
         bool offscreenBuffering() const;
+        
+        static void firePostTimer(void* handle);
 
         int outerHeight() const;
         int outerWidth() const;

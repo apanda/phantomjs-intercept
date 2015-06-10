@@ -42,6 +42,7 @@
 class Config;
 class QNetworkDiskCache;
 class QSslConfiguration;
+class NetworkAccessManager;
 
 class TimeoutTimer : public QTimer
 {
@@ -72,11 +73,12 @@ class JsNetworkReply : public QObject
     Q_OBJECT
 
 public:
-    JsNetworkReply(QNetworkReply* reply, QObject* parent = 0);
-    Q_INVOKABLE void deliverData(); 
-    Q_INVOKABLE void deliverReadyRead();
+    JsNetworkReply(NetworkAccessManager* manager,  QNetworkReply* reply, QObject* parent = 0);
+    Q_INVOKABLE void deliverData(const QString&); 
+    Q_INVOKABLE void deliverReadyRead(const QString&);
 private:
     QNetworkReply* m_networkReply;
+    NetworkAccessManager* m_manager;
 };
 
 class NoFileAccessReply : public QNetworkReply
@@ -122,11 +124,11 @@ signals:
     void resourceRequested(const QVariant& data, QObject *);
     void resourceReceived(const QVariant& data);
     void resourceDataAvailable(const QVariant& data, QObject *);
-    void resourceCanStart(const QVariant& data, QObject *);
+    void resourceReadyRead(const QVariant& data, QObject *);
     void resourceReceiveFinished(const QVariant& data);
     void resourceError(const QVariant& data);
     void resourceTimeout(const QVariant& data);
-
+    void resourceReadQuiesced(const QString&);
 private slots:
     void handleReadyReadAvailable();
     void handleStarted();

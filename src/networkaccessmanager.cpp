@@ -88,7 +88,6 @@ NoFileAccessReply::NoFileAccessReply(QObject *parent, const QNetworkRequest &req
     QString msg = (QCoreApplication::translate("QNetworkReply", "Protocol \"%1\" is unknown")
                    .arg(req.url().scheme()));
     setError(ProtocolUnknownError, msg);
-    deliverFinish();
 }
 
 // The destructor must be out-of-line in order to trigger generation of the vtable.
@@ -99,10 +98,10 @@ void NoFileAccessReply::deliverFinish() {
     QMetaObject::invokeMethod(this, "error", Qt::QueuedConnection,
                               Q_ARG(QNetworkReply::NetworkError, ProtocolUnknownError));
     QMetaObject::invokeMethod(this, "finished", Qt::QueuedConnection);
+
 }
 
 void NoFileAccessReply::deliverReadyRead() {
-
 }
 
 TimeoutTimer::TimeoutTimer(QObject* parent)
@@ -172,6 +171,7 @@ NetworkAccessManager::NetworkAccessManager(QObject *parent, const Config *config
     if (config->diskCacheEnabled()) {
         m_networkDiskCache = new QNetworkDiskCache(this);
         m_networkDiskCache->setCacheDirectory(QStandardPaths::writableLocation(QStandardPaths::CacheLocation));
+        Terminal::instance()->cout(QString("Cache directory is %1").arg(QStandardPaths::CacheLocation));
         if (config->maxDiskCacheSize() >= 0)
             m_networkDiskCache->setMaximumCacheSize(qint64(config->maxDiskCacheSize()) * 1024);
         setCache(m_networkDiskCache);
@@ -495,30 +495,33 @@ void NetworkAccessManager::handleNetworkError()
     emit resourceError(data);
 }
 
-JsNetworkReply::JsNetworkReply(QNetworkReply* reply, QObject* parent):
+JsNetworkReply::JsNetworkReply(NetworkAccessManager* manager, QNetworkReply* reply, QObject* parent):
     QObject(parent),
-    m_networkReply(reply)
+    m_networkReply(reply),
+    m_manager(manager)
 {
 }
 
-void JsNetworkReply::deliverData() 
+void JsNetworkReply::deliverData(const QString& cookie) 
 {
     if (m_networkReply) {
         m_networkReply->deliverFinish();
     }
+    emit m_manager->resourceReadQuiesced(cookie);
 }
 
-void JsNetworkReply::deliverReadyRead() 
+void JsNetworkReply::deliverReadyRead(const QString& cookie) 
 {
     if (m_networkReply) {
         m_networkReply->deliverReadyRead();
     }
+    emit m_manager->resourceReadQuiesced(cookie);
 }
 
 void NetworkAccessManager:: handleFinishedDataAvailable() 
 {
     QNetworkReply* reply = qobject_cast<QNetworkReply*>(sender());
-    JsNetworkReply* jsReply = new JsNetworkReply(reply, reply);
+    JsNetworkReply* jsReply = new JsNetworkReply(this, reply, reply);
     QVariantList headers;
     foreach (QByteArray headerName, reply->rawHeaderList()) {
         QVariantMap header;
@@ -572,6 +575,6 @@ void NetworkAccessManager::handleReadyReadAvailable()
     data["headers"] = headers;
     data["time"] = QDateTime::currentDateTime();
 
-    emit resourceCanStart(data, new JsNetworkReply(reply, reply));
+    emit resourceReadyRead(data, new JsNetworkReply(this, reply, reply));
 }
 

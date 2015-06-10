@@ -84,6 +84,7 @@ public:
                            EventTargetData* d, 
                            EventListenerVector* entry,
                            EventTarget* target);
+    virtual bool postMessage(void*, const char*, const char*);
 
     virtual void setWindowRect(const FloatRect&);
     virtual FloatRect windowRect();

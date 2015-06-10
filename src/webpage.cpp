@@ -121,10 +121,12 @@ public:
 
 signals:
     void signalTimer(WebCore::DOMTimer* timer, int interval, bool singleShot);
-    //void signalEvent(std::string type, JsEventObject* ev);
+
     void signalEvent(JsEventObject* ev);
 
     void signalHandlerDone(const QString&);
+
+    void postEvent(JsPostMessageObject* ev);
 
 public slots:
     bool shouldInterruptJavaScript() {
@@ -141,6 +143,12 @@ public slots:
 
 protected:
     
+    bool postMessage(void* handle, const char* message, const char* origin) {
+        JsPostMessageObject* obj = new JsPostMessageObject(handle, message, origin, this, m_webPage);
+        emit postEvent(obj);
+        return false;
+    }
+
     bool setTimer(WebCore::DOMTimer* timer, int interval, bool singleShot) {
         emit signalTimer(timer, interval, singleShot);
         //fireTimer(timer);
@@ -152,10 +160,6 @@ protected:
                WebCore::EventTargetData* d, 
                void* entry,
                WebCore::EventTarget* target) {
-        //deliverEvent(event, 
-                     //d, 
-                     //entry,
-                     //target);
         JsEventObject* jsObj = new JsEventObject(info, event, d, entry, target, this, m_webPage);
         emit signalEvent(jsObj);
         return false;
@@ -409,6 +413,10 @@ WebPage::WebPage(QObject *parent, const QUrl &baseUrl)
             SLOT(handleSetTimer(WebCore::DOMTimer*, int, bool)), Qt::QueuedConnection);
     connect(m_customWebPage, SIGNAL(signalHandlerDone(const QString&)), this,
             SLOT(handleHandlerDone(const QString&)), Qt::QueuedConnection);
+    connect(m_customWebPage, SIGNAL(signalHandlerDone(const QString&)), this,
+            SLOT(handleHandlerDone(const QString&)), Qt::QueuedConnection);
+    connect(m_customWebPage, SIGNAL(postEvent(JsPostMessageObject*)), this,
+            SLOT(handlePostEvent(JsPostMessageObject*)), Qt::QueuedConnection);
 
     // Start with transparent background.
     QPalette palette = m_customWebPage->palette();
@@ -444,8 +452,11 @@ WebPage::WebPage(QObject *parent, const QUrl &baseUrl)
             SIGNAL(resourceTimeout(QVariant)));
     connect(m_networkAccessManager, SIGNAL(resourceDataAvailable(QVariant, QObject *)),
             SIGNAL(resourceDataAvailable(QVariant, QObject *)));
-    connect(m_networkAccessManager, SIGNAL(resourceCanStart(QVariant, QObject *)),
-            SIGNAL(resourceCanStart(QVariant, QObject *)));
+    connect(m_networkAccessManager, SIGNAL(resourceReadyRead(QVariant, QObject *)),
+            SIGNAL(resourceReadyRead(QVariant, QObject *)));
+
+    connect(m_networkAccessManager, SIGNAL(resourceReadQuiesced(const QString&)),
+            SIGNAL(quiesced(const QString&)), Qt::QueuedConnection);
 
     m_customWebPage->setViewportSize(QSize(400, 300));
 }
@@ -1702,6 +1713,19 @@ void WebPage::handleSigEv(JsEventObject* ev)
     emit eventPending(eventInfo, ev); 
 }
 
+void WebPage::handlePostEvent(JsPostMessageObject* ev)
+{
+    QVariantMap eventInfo;
+    eventInfo["EventType"] = "PostMessage";
+    eventInfo["NodeInterfaceName"] = QString();
+    eventInfo["NodeName"] = QString();
+    eventInfo["NodeType"] = QString();
+    eventInfo["Message"] = ev->m_message;
+    eventInfo["Origin"] = ev->m_origin;
+    ev->setParent(this);
+    emit eventPending(eventInfo, ev); 
+}
+
 void WebPage::handleHandlerDone(const QString& cookie) {
     emit quiesced(cookie); 
 }
@@ -1755,6 +1779,25 @@ void JsEventObject::handleFireSignal(const QString& cookie) {
 
 void JsTimerObject::handleFireSignal(const QString& cookie) {
     m_page->deliverTimer(m_timer);
+    emit m_page->signalHandlerDone(cookie);
+}
+
+JsPostMessageObject::JsPostMessageObject(void* handle, const char* message, const char* origin, CustomPage* page, QObject* parent) :
+    QObject(parent),
+    m_handle(handle),
+    m_page(page)
+{
+    m_message = QString::fromUtf8(message);
+    m_origin = QString::fromUtf8(origin);
+    connect(this, SIGNAL(fireSignal(const QString&)), this, SLOT(handleFireSignal(const QString&)), Qt::QueuedConnection);
+}
+
+void JsPostMessageObject::fire(const QString& cookie) {
+    emit fireSignal(cookie);
+}
+
+void JsPostMessageObject::handleFireSignal(const QString& cookie) {
+    m_page->firePostTimer(m_handle);
     emit m_page->signalHandlerDone(cookie);
 }
 

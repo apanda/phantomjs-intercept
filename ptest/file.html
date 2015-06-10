@@ -2,6 +2,7 @@
     <head>
         <script>
             alerted = false;
+            console.log('Running');
             window.onload = function() { setTimeout(function(){if (alerted) {throw "Alread alerted";} }, 2);}
 
             setTimeout(function(){ setTimeout(function(){alert("Wooho");}, 30); }, 3);

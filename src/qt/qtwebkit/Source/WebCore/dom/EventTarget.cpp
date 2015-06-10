@@ -263,17 +263,18 @@ void EventTarget::fireEventListenersInternal(Event* event, EventTargetData* d, E
 
 void EventTarget::fireEventListeners(Event* event, EventTargetData* d, EventListenerVector& entry)
 {
-    RefPtr<EventTarget> protect = this;
+    this->ref();
     ScriptExecutionContext* context = scriptExecutionContext();
+    event->ref();
+    m_pendingEvents.add(event);
     if (!context->isDocument() ||
         context->toDocument()->page()->chrome().client()->fireEvent(event, d, &entry, this)) {
+        ASSERT(context->isDocument());
         fireEventListenersInternal(event, d, entry);
-    }
-    else {
-        // Keep the event alive after return from here
-        // Making two pointers out of one, so manually up the ref (one for ev, one for m_eventMap).
-        event->ref();
-        m_pendingEvents.add(event);
+        // Once consumed, we don't want people to use the event repeatedly.
+        m_pendingEvents.remove(event);
+        this->deref();
+        // Let us not use more memory than necessary
     }
 }
 
@@ -319,6 +320,8 @@ void EventTarget::deliverEvent(EventTarget* target , Event* ev, EventTargetData*
         target->m_pendingEvents.remove(ev);
         // Let us not use more memory than necessary
         ev->deref();
+        // Need to ref and deref target to maintain things.
+        target->deref();
     }
     // Once fired, get rid of the event.
 }
