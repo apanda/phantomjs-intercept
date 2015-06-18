@@ -149,6 +149,14 @@ namespace WebCore {
 
     private:
         inline void incrementEventReference (Event* ev) {
+            this->ref();
+            ev->ref();
+            if (ev->target()) {
+                ev->target()->ref();
+            }
+            if (ev->underlyingEvent()) {
+                ev->underlyingEvent()->ref();
+            }
             if (m_pendingEvents.contains(ev)) {
                 size_t delivered = m_pendingEvents.get(ev) + 1;
                 m_pendingEvents.set(ev, delivered);
@@ -159,14 +167,24 @@ namespace WebCore {
 
         inline bool decrementEventReference (Event* ev) {
             size_t delivered = m_pendingEvents.get(ev) - 1;
+            bool ret = false;
             if (delivered == 0) {
                 // Once consumed, we don't want people to use the event repeatedly.
                 m_pendingEvents.remove(ev);
-                return true;
+                ret = true;
             } else {
                 m_pendingEvents.set(ev, delivered);
-                return false;
+                ret = false;
             }
+            if (ev->underlyingEvent()) { 
+                ev->underlyingEvent()->deref();
+            }
+            if (ev->target()) {
+                ev->target()->deref();
+            }
+            ev->deref();
+            this->deref();
+            return ret;
         }
 
         typedef HashMap<Event*, size_t> EventSet;

@@ -124,6 +124,8 @@ signals:
 
     void signalEvent(JsEventObject* ev);
 
+    void jsError(const QString& msg, int line, const QString& srcID, const QString& stack); 
+
     void signalHandlerDone(const QString&);
 
     void postEvent(JsPostMessageObject* ev);
@@ -206,7 +208,8 @@ protected:
     }
 
     void javaScriptError(const QString &message, int lineNumber, const QString &sourceID, const QString &stack) {
-        emit m_webPage->javaScriptErrorSent(message, lineNumber, sourceID, stack);
+    //void jsError(const QString& msg, int line, const QString& srcID, const QString& stack); 
+        emit jsError(message, lineNumber, sourceID, stack);
     }
 
     QString userAgentForUrl(const QUrl &url) const {
@@ -413,10 +416,12 @@ WebPage::WebPage(QObject *parent, const QUrl &baseUrl)
             SLOT(handleSetTimer(WebCore::DOMTimer*, int, bool)), Qt::QueuedConnection);
     connect(m_customWebPage, SIGNAL(signalHandlerDone(const QString&)), this,
             SLOT(handleHandlerDone(const QString&)), Qt::QueuedConnection);
-    connect(m_customWebPage, SIGNAL(signalHandlerDone(const QString&)), this,
+    connect(this, SIGNAL(quiescedInternal(const QString&)), this,
             SLOT(handleHandlerDone(const QString&)), Qt::QueuedConnection);
     connect(m_customWebPage, SIGNAL(postEvent(JsPostMessageObject*)), this,
             SLOT(handlePostEvent(JsPostMessageObject*)), Qt::QueuedConnection);
+    connect(m_customWebPage, SIGNAL(jsError(const QString&, int, const QString&, const QString&)), this,
+            SLOT(javaScriptErrorHandler(const QString&, int, const QString&, const QString&)), Qt::QueuedConnection);
 
     // Start with transparent background.
     QPalette palette = m_customWebPage->palette();
@@ -740,7 +745,7 @@ QVariantMap WebPage::paperSize() const
     return m_paperSize;
 }
 
-QVariant WebPage::evaluateJavaScript(const QString &code)
+QVariant WebPage::evaluateJavaScript(const QString &code, const QString& cookie)
 {
     QVariant evalResult;
     QString function = "(" + code + ")()";
@@ -752,6 +757,9 @@ QVariant WebPage::evaluateJavaScript(const QString &code)
                 QString("phantomjs://webpage.evaluate()")); //< reference source file
 
     qDebug() << "WebPage - evaluateJavaScript result" << evalResult;
+
+    Terminal::instance()->cout(QString("eval JS Quiescing %1").arg(cookie));
+    emit quiescedInternal(cookie); 
 
     return evalResult;
 }
@@ -948,7 +956,8 @@ void WebPage::close() {
 bool WebPage::renderCookie(const QString& cookie, const QString &fileName, const QVariantMap &option)
 {
     bool r = render(fileName, option);
-    emit quiesced(cookie); 
+    Terminal::instance()->cout(QString("renderCookie Quiescing %1").arg(cookie));
+    emit quiescedInternal(cookie); 
     return r;
 }
 
@@ -1399,6 +1408,7 @@ QObject *WebPage::_getJsInterruptCallback()
 void WebPage::sendEventCookie(
     const QString& cookie, const QString &type, const QVariant &arg1, const QVariant &arg2, const QString &mouseButton, const QVariant &modifierArg)
 {
+    Terminal::instance()->cout(QString("Send Event Cookie Quiescing %1").arg(cookie));
     sendEvent(type, arg1, arg2, mouseButton, modifierArg);
     emit quiesced(cookie); 
 }
@@ -1743,7 +1753,19 @@ void WebPage::handlePostEvent(JsPostMessageObject* ev)
 }
 
 void WebPage::handleHandlerDone(const QString& cookie) {
+    Terminal::instance()->cout(QString("handleHandlerDone Quiescing %1").arg(cookie));
     emit quiesced(cookie); 
+}
+
+void WebPage::javaScriptErrorHandler(const QString &msg, int lineNumber, const QString &sourceID, const QString &stack) {
+    Terminal::instance()->cout(QString("Qjs error %1").arg(msg));
+    Terminal::instance()->cout(QString("Qjs error %1").arg(lineNumber));
+    QVariantMap errorInfo;
+    errorInfo["Msg"] = msg;
+    errorInfo["line"] = QVariant(lineNumber);
+    errorInfo["source"] = sourceID;
+    errorInfo["stack"] = stack;
+    emit javaScriptErrorSent(msg, QVariant(lineNumber), sourceID, stack); 
 }
 
 JsTimerObject::JsTimerObject(WebCore::DOMTimer* timer, CustomPage* page, QObject* parent) 

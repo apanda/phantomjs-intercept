@@ -319,7 +319,7 @@ public slots:
     void release();
     void close();
 
-    QVariant evaluateJavaScript(const QString &code);
+    QVariant evaluateJavaScript(const QString &code, const QString& cookie);
     bool renderCookie(const QString& cookie, const QString &fileName, const QVariantMap &map = QVariantMap());
     bool render(const QString &fileName, const QVariantMap &map = QVariantMap());
     /**
@@ -570,7 +570,9 @@ signals:
     void loadFinished(const QString &status);
     void javaScriptAlertSent(const QString &msg);
     void javaScriptConsoleMessageSent(const QString &message);
-    void javaScriptErrorSent(const QString &msg, int lineNumber, const QString &sourceID, const QString &stack);
+    void javaScriptErrorSent(const QString &msg, const QVariant& lineNumber, const QString &sourceID, const QString &stack);
+    //void javaScriptErrorSent(const QVariant& data);
+    //void javaScriptErrorSent(const QString& data);
     void resourceRequested(const QVariant &requestData, QObject *request);
     void resourceReceived(const QVariant &resource);
     void resourceReceiveFinished(const QVariant &resource);
@@ -586,6 +588,7 @@ signals:
     void timerSet(const QVariant& timerData, QObject* timerRequest);
     void eventPending(const QVariant& eventData, QObject* event);
     void quiesced(const QString&);
+    void quiescedInternal(const QString&);
 
 private slots:
     void finish(bool ok);
@@ -596,6 +599,7 @@ private slots:
     void handleSigEv(JsEventObject*);
     void handleHandlerDone(const QString&);
     void handlePostEvent(JsPostMessageObject*);
+    void javaScriptErrorHandler(const QString &msg, int lineNumber, const QString &sourceID, const QString &stack);
 
 private:
     QImage renderImage();

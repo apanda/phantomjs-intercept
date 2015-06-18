@@ -263,9 +263,7 @@ void EventTarget::fireEventListenersInternal(Event* event, EventTargetData* d, E
 
 void EventTarget::fireEventListeners(Event* event, EventTargetData* d, EventListenerVector& entry)
 {
-    this->ref();
     ScriptExecutionContext* context = scriptExecutionContext();
-    event->ref();
     incrementEventReference(event);
     if (!context->isDocument() ||
         context->toDocument()->page()->chrome().client()->fireEvent(event, d, &entry, this)) {
@@ -273,7 +271,6 @@ void EventTarget::fireEventListeners(Event* event, EventTargetData* d, EventList
         fireEventListenersInternal(event, d, entry);
         // Once consumed, we don't want people to use the event repeatedly.
         decrementEventReference(event);
-        this->deref();
         // Let us not use more memory than necessary
     }
 }
@@ -313,15 +310,15 @@ void EventTarget::removeAllEventListeners()
 void EventTarget::deliverEvent(EventTarget* target , Event* ev, EventTargetData* d, void* v)
 {
     // Don't call this function without a handle, that is crazy.
+    target->ref();
     ASSERT(target->m_pendingEvents.contains(ev));
     if (target->m_pendingEvents.contains(ev)) {
-        target->fireEventListenersInternal(ev, d, *(EventListenerVector*)v);
+        if (ev->target()) {
+            target->fireEventListenersInternal(ev, d, *(EventListenerVector*)v);
+        }
         target->decrementEventReference(ev);
-        // Let us not use more memory than necessary
-        ev->deref();
-        // Need to ref and deref target to maintain things.
-        target->deref();
     }
+    target->deref();
     // Once fired, get rid of the event.
 }
 

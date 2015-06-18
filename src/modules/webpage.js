@@ -278,6 +278,8 @@ function decorateNewPage(opts, page) {
 
     definePageSignalHandler(page, handlers, "onQuiesced", "quiesced"); 
 
+    definePageSignalHandler(page, handlers, "onError", "javaScriptErrorSent"); 
+
     // Private callback for "page.open()"
     definePageSignalHandler(page, handlers, "_onPageOpenFinished", "loadFinished");
 
@@ -369,8 +371,9 @@ function decorateNewPage(opts, page) {
      * @param   {...}       args    function arguments
      * @return  {*}                 the function call result
      */
-    page.evaluate = function (func, args) {
+    page.evaluate = function (func, args, cookie) {
         var str, arg, argType, i, l;
+        cookie = cookie || "";
         if (!(func instanceof Function || typeof func === 'string' || func instanceof String)) {
             throw "Wrong use of WebPage#evaluate";
         }
@@ -396,7 +399,7 @@ function decorateNewPage(opts, page) {
             }
         }
         str = str.replace(/,$/, '') + '); }';
-        return this.evaluateJavaScript(str);
+        return this.evaluateJavaScript(str, cookie);
     };
 
     /**
