@@ -133,15 +133,12 @@
         };
 
         page.onTimerSet = function(info, timer) {
-            //if (eventRunning) {
             try {
-                //console.log("Recording timer being set");
                 var cookie = prepareEvent(info);
                 eventCounts[info["EventID"]] = (eventCounts[info["EventID"]] || 0) + 1;
                 evt = {'info': info, 'cookie': cookie, 'obj': timer};
                 if (eventRunning) {
                     var ret = events.push(evt);
-                    //console.log("Done recording Length is now " + ret);
                 } else {
                     dispatchInternal(evt);
                 }
@@ -151,17 +148,12 @@
         };
 
         page.onPendingEvent = function(info, evt) {
-            //console.log("Event");
             try {
-            //if (eventRunning) {
-              //console.log("Nothing is running, so running this ");
               eventCounts[info["EventID"]] = (eventCounts[info["EventID"]] || 0) + 1;
-              //console.log('Recording event ' + JSON.stringify(info));
               var cookie = prepareEvent(info);
               var evt = {'info': info, 'cookie': cookie, 'obj': evt};
               if (eventRunning) {
                   var ret = events.push(evt);
-                  //console.log("Length is now " + ret);
               } else {
                   dispatchInternal(evt);
               }
@@ -191,10 +183,7 @@
                 eventRunning = allocCookie();
                 next(page, eventRunning);
             } else {
-                //console.log('Nothing to do');
-                //console.log('Should not see any message after ' + eventRunning);
                 done();
-                //phantom.exit();
             }
         };
 

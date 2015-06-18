@@ -1,0 +1,151 @@
+<html>
+    <head>
+        <script>
+        window.onload= function ()
+        {
+            var canvas=document.getElementById("canvas");
+            var context=canvas.getContext("2d");
+
+            var canvasWidth=window.innerWidth;
+            var canvasHeight=window.innerHeight;
+            canvas.width=canvasWidth;
+            canvas.height=canvasHeight;
+
+            var up=false;
+            var down=false;
+            var left=false;
+            var right=true;
+
+               var snake={
+                x:20,
+                y:0,
+                w:20,
+                h:20
+            };
+            var snakeBody=[];
+            for (i = 0; i < 5; i++) {
+                snakeBody.push({
+                x:snake.x ,
+                y:snake.y ,
+                w:snake.w,
+                h:snake.h
+            });
+            snake.x +=20;
+            }
+
+            var food={
+                x:Math.random() * canvasWidth,
+                y:Math.random() * canvasHeight,
+                w:2,
+                h:2
+            };
+
+            function moveUp()
+            {
+
+                    snakeBody[0].y -=3;
+
+            }
+            function moveDown()
+            {
+
+                    snakeBody[0].y +=3;
+
+            }
+            function moveLeft()
+            {
+
+                    snakeBody[0].x -=3;
+
+            }
+            function moveRight()
+            {
+
+                    snakeBody[0].x +=3;
+
+
+            }
+            function draw()
+            {
+                context.clearRect(0,0,canvasWidth,canvasHeight);
+                context.fillStyle="rgba(230,230,230,0.1)";
+                context.beginPath();
+
+               for (i = snakeBody.length - 1; i > 0 ; i--) {
+                   context.rect(snakeBody[i].x,snakeBody[i].y,snakeBody[i].w,snakeBody[i].h);
+                   snakeBody[i].x=snakeBody[i-1].x;
+                   snakeBody[i].y=snakeBody[i-1].y;
+                }
+                //context.rect(food.x,food.y,food.w,food.h);
+
+                context.stroke();
+                context.fill();
+
+                directions();
+                collision();
+                update();
+            }
+            function directions()
+            {
+                document.onkeydown = function(e)
+                {
+                   var event = window.event ? window.event : e;
+                     var keycode = event.keyCode;
+                    if (keycode===37 && right===false) {
+                        left=true;
+                        right=false;
+                        up=false;
+                        down=false;
+                    }
+                    if (keycode===38 && down===false) {
+                        up=true;
+                        down=false;
+                        left=false;
+                        right=false;
+                    }
+                    if (keycode===39 && left===false) {
+                        right=true;
+                        left=false;
+                        up=false;
+                        down=false;
+                    }
+                    if (keycode===40 && up===false) {
+                        down=true;
+                        up=false;
+                        left=false;
+                        right=false;
+                    }
+                };
+            }
+            function update()
+            {
+                if (up) {moveUp();}
+                if (down) {moveDown();}
+                if (left) {moveLeft();}
+                if (right) {moveRight();}
+            }
+             function collision()
+             {
+                 for (i = 0; i < snakeBody.length; i++) {
+                    if (snakeBody[i].x >canvasWidth) {
+                    snakeBody[i].x  = 0;
+                }
+                if (snakeBody[i].x < 0) {
+                    snakeBody[i].x=canvasWidth;
+                }
+                if (snakeBody[i].y>canvasHeight) {
+                    snakeBody[i].y=0;
+                }
+                if (snakeBody[i].y <0) {
+                    snakeBody[i].y=canvasHeight;
+                }
+                } 
+             }
+                setInterval(draw,40);
+        };
+        </script>
+    </head>
+	<body>
+    <canvas id="canvas" width="1024" height="960" />
+	</body>
+</html>
