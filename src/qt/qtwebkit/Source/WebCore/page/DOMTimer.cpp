@@ -61,12 +61,16 @@ DOMTimer::DOMTimer(ScriptExecutionContext* context, PassOwnPtr<ScheduledAction> 
     , m_action(action)
     , m_originalInterval(interval)
     , m_shouldForwardUserGesture(shouldForwardUserGesture(interval, m_nestingLevel))
-    , m_document(toDocument(context)) 
+    , m_document(toDocument(context))
+    , m_repeating(!singleShot)
+    , m_stopped (false)
+    , m_shouldDelete (false)
 {
     // Keep asking for the next id until we're given one that we don't already have.
     do {
         m_timeoutId = context->circularSequentialID();
     } while (!context->addTimeout(m_timeoutId, this));
+    m_document->ref();
 
     double intervalMilliseconds = intervalClampedToMinimum(interval, context->minimumTimerInterval());
     
@@ -86,7 +90,15 @@ DOMTimer::~DOMTimer()
 
 void DOMTimer::fire()
 {
-    fired();
+    if (!m_stopped) {
+        // After fired is called, this might all be gone, so check now
+        if (m_repeating) {
+            m_document->frame()->page()->chrome().client()->setTimer(this, m_originalInterval, !m_repeating);
+        }
+        fired();
+    } else if (m_shouldDelete) {
+        delete this;
+    }
 }
 
 int DOMTimer::install(ScriptExecutionContext* context, PassOwnPtr<ScheduledAction> action, int timeout, bool singleShot)
@@ -112,7 +124,8 @@ void DOMTimer::removeById(ScriptExecutionContext* context, int timeoutId)
 
     InspectorInstrumentation::didRemoveTimer(context, timeoutId);
 
-    delete context->findTimeout(timeoutId);
+    context->findTimeout(timeoutId)->stop();
+    context->findTimeout(timeoutId)->m_shouldDelete = true;
 }
 
 void DOMTimer::fired()
@@ -127,7 +140,7 @@ void DOMTimer::fired()
     InspectorInstrumentationCookie cookie = InspectorInstrumentation::willFireTimer(context, m_timeoutId);
 
     // Simple case for non-one-shot timers.
-    if (isActive()) {
+    if (m_repeating & !m_stopped) {
         double minimumInterval = context->minimumTimerInterval();
         if (repeatInterval() && repeatInterval() < minimumInterval) {
             m_nestingLevel++;
@@ -164,11 +177,12 @@ void DOMTimer::contextDestroyed()
 
 void DOMTimer::stop()
 {
-    SuspendableTimer::stop();
-    // Need to release JS objects potentially protected by ScheduledAction
-    // because they can form circular references back to the ScriptExecutionContext
-    // which will cause a memory leak.
-    m_action.clear();
+    m_stopped = true;
+    //SuspendableTimer::stop();
+    //// Need to release JS objects potentially protected by ScheduledAction
+    //// because they can form circular references back to the ScriptExecutionContext
+    //// which will cause a memory leak.
+    //m_action.clear();
 }
 
 void DOMTimer::adjustMinimumTimerInterval(double oldMinimumTimerInterval)

@@ -1760,6 +1760,8 @@ void WebPage::handleHandlerDone(const QString& cookie) {
 void WebPage::javaScriptErrorHandler(const QString &msg, int lineNumber, const QString &sourceID, const QString &stack) {
     Terminal::instance()->cout(QString("Qjs error %1").arg(msg));
     Terminal::instance()->cout(QString("Qjs error %1").arg(lineNumber));
+    Terminal::instance()->cout(QString("Qjs error %1").arg(sourceID));
+    Terminal::instance()->cout(QString("Qjs error %1").arg(stack));
     QVariantMap errorInfo;
     errorInfo["Msg"] = msg;
     errorInfo["line"] = QVariant(lineNumber);

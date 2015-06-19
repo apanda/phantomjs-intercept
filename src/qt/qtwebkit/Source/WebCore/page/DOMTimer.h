@@ -71,6 +71,9 @@ namespace WebCore {
         int m_originalInterval;
         bool m_shouldForwardUserGesture;
         Document* m_document;
+        bool m_repeating;
+        bool m_stopped;
+        bool m_shouldDelete;
     };
 
 } // namespace WebCore

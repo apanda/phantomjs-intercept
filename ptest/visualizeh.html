@@ -1,0 +1,140 @@
+<html>
+<head>
+<style>
+.node rect {
+  cursor: pointer;
+  fill: #fff;
+  fill-opacity: 1.0;
+  stroke: #3182bd;
+  stroke-width: 1.5px;
+}
+
+.node circle {
+opacity: 1.0;    
+}
+.node text {
+  font: 12px sans-serif;
+  pointer-events: none;
+}
+
+path.link {
+  fill: none;
+  stroke: #1c9099;
+  stroke-width: 1.5px;
+}
+
+.d3-tip {
+  line-height: 1;
+  font-weight: bold;
+  padding: 1px;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  border-radius: 2px;
+}
+
+/* Creates a small triangle extender for the tooltip */
+.d3-tip:after {
+  box-sizing: border-box;
+  display: inline;
+  font-size: 10px;
+  width: 100%;
+  line-height: 1;
+  color: rgba(0, 0, 0, 0.8);
+  content: "\25BC";
+  position: absolute;
+  text-align: center;
+}
+
+/* Style northward tooltips differently */
+.d3-tip.n:after {
+  margin: -1px 0 0 0;
+  top: 100%;
+  left: 0;
+}
+</style>
+</head>
+<body>
+    <div id="chart" width="2048"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+<script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
+<script src="trace.json"></script>
+
+<script>
+ var structuredData = {};
+ var nodes = {'global': {'name': 'global', 'children':[], 'idx': [], 'event': 'clockStart', 'tooltip': "Root"}};
+ for (cookie in data['ancestors']) {
+   nodes[cookie] = {'name': cookie, 'children':[], 'idx': [], 'event': JSON.parse(data['idToEvent'][cookie])};  
+   var ttip;
+   if(typeof nodes[cookie].event === "object" && nodes[cookie].event !== null) {
+    ttip = Object.keys(nodes[cookie].event).map(function(k) {return ' ' + k + ' : ' + JSON.stringify(nodes[cookie].event[k]);}).join('<br/>');
+   } else {
+    ttip = nodes[cookie].event;
+   }
+   nodes[cookie]['tooltip'] = ttip;
+   if (nodes[cookie].event.isError) {
+     nodes[cookie]['error']=true;
+   }
+ }
+ for (cookie in data['ancestors']) {
+   nodes[data['ancestors'][cookie]]['children'].push(nodes[cookie]);
+ }
+ for (idx=0; idx<data["trace"].length;idx++) {
+   nodes[data["trace"][idx]]["idx"].push(idx + 1);
+ }
+
+ var width = 960,
+     height = screen.height;
+
+ var tip = d3.tip()
+           .attr('class', 'd3-tip')
+           .offset([-10, 0])
+           .html(function(d) {
+                   return "&nbsp;&nbsp;" + d.idx.join("<br/>&nbsp;&nbsp;") + "<br/>" + d.tooltip;
+                });
+ 
+ var cluster = d3.layout.cluster()
+     .size([height - 256, width - 160]);
+ 
+ var diagonal = d3.svg.diagonal()
+     .projection(function(d) { return [d.y, d.x]; });
+ 
+ var svg = d3.select("body").append("svg")
+     .attr("width", width)
+     .attr("height", height)
+   .append("g")
+     .attr("transform", "translate(40,128)");
+ svg.call(tip);
+ 
+ var nodes = cluster.nodes(nodes['global']),
+    links = cluster.links(nodes);
+ 
+ var link = svg.selectAll(".link")
+     .data(links)
+   .enter().append("path")
+     .attr("class", "link")
+     .attr("d", diagonal);
+ 
+ var node = svg.selectAll(".node")
+     .data(nodes)
+   .enter().append("g")
+     .attr("class", "node")
+     .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; })
+ 
+ node.append("circle")
+      .attr("r", 8)
+      .attr("fill", function(d) {return d.error ? "#ff0000" : "#000000"})
+      .on('mouseover', tip.show)
+      .on('mouseout', tip.hide)
+ 
+ node.append("text")
+     .attr("dx", function(d) { return 8; })
+     .attr("dy", 4)
+     .style("text-anchor", function(d) { return "start"; })
+     .text(function(d) { return d.idx.length>0 ? d.name + "(" + d.idx.join(', ') + ")": d.name; });
+ 
+ d3.select(self.frameElement).style("height", height + "px");
+//});
+</script>
+
+</body>
+</html>
